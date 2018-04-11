@@ -148,8 +148,11 @@ class gridworld(grids, object):
         pylab.show()
 
                         
-    def episode(self, rewards, max_t = float('inf')):
-        file = open('./data/demo', 'a')
+    def episode(self, rewards, steps = 64):
+        if steps is None:
+            steps = self.steps
+
+        file = open('./data/demo_gridworld', 'a')
 
         trajectory = []
 	state = self.M.starts[0]
@@ -160,13 +163,14 @@ class gridworld(grids, object):
 
 	title = "Input action in terminal [0:end, 1: left, 2: down, 3: right, 4: up]"
 	self.draw_grids(rewards, None, title)
-	while max_t > 0:
+	while steps > 0:
             try:
 		action = int(raw_input("Choose next action: "))
 		if action!= 0 and action != 1 and action !=2 and action !=3 and action !=4:
 		    print("Invalid action, input again")
 		    next
 		elif action == 0:
+                    print("Trajectory ends")
                     file.write(str(t) + ' ' + str(state) + ' ' + str(action) + ' ' + str(state) + '\n')
 		    pylab.ioff()
 		    pylab.close('all')
@@ -183,35 +187,41 @@ class gridworld(grids, object):
                     
 		    self.draw_grids(rewards, trajectory, title)
 
-
                     t += 1
-                    max_t -= t
+                    steps -= 1
                     state = state_
 
 	    except:
 		print("Invalid action, input again")
 		next
+        if steps == 0:
+            print("Reached maximum step length")
         file.close()
 
-    def demo(self, rewards, max_t = float('inf')):
+    def demo(self, rewards, steps = float('inf')):
         path_num = 0
-        os.system('rm ./data/demo')
+        os.system('rm ./data/demo_gridworld')
         start = raw_input("Human demonstrate? [Y/N]")
         while start == 'y' or start == 'Y':
-            self.episode(rewards, max_t)
+            self.episode(rewards, steps)
             start = raw_input("Human demonstrate? [Y/N]")
 
         
          
-    def learn_from_human_demo(self):        
+    def learn_from_human_demo(self, steps = 64):        
+        if steps is None:
+            steps = self.steps
 
-        learn = apirl(self.M, max_iter = 30)
+        learn = cegal(self.M, max_iter = 30)
 
-        theta = np.array([1., 1., 0., 0.])
+        theta = np.array([1., 1., -1., -1.])
         theta = theta/np.linalg.norm(theta, ord = 2)
         self.M.rewards = np.dot(self.M.features, theta) 
-        mus, _ = self.M.optimal_policy(theta)
-        demo_mu = mus[-2]
+        self.demo(self.M.rewards, steps = steps)
+        demo_mu = learn.read_demo_file('./data/demo_gridworld')
+
+        #mus, _ = self.M.optimal_policy(theta)
+        #demo_mu = mus[-2]
 
         #theta = np.array([1., 1., 0., 0.])
         #demo_mu = np.array([ 34.27191387, 84.02248669,   2.59569051,   0.84842763])
@@ -225,41 +235,53 @@ class gridworld(grids, object):
         #Learn from \approx[0.1, 0.1, -0.7, -0.7]
         #demo_mu = np.array([31.48191543,  85.06620586,   1.74326134,   1.18968865])
     
-        opt = learn.iteration(demo_mu)
+        opt = super(cegal, learn).iteration(demo_mu)
+        prob = learn.model_check(opt['policy'], steps = 64)
         
+        print("\n>>>>>>>>Apprenticeship Learning learnt policy weight vector:")
+        print(opt['theta'])
+        print("\nFeature vector margin: %f" % opt['diff'])
+        print("\nPRISM model checking result: %f\n" % prob)
         
-        '''
-        theta = np.array([1., 1., -1., -1.])
-        theta = theta/np.linalg.norm(theta, ord = 2)
-        grids.M.rewards = np.dot(grids.M.features, theta) 
-        exp_mu = grids.demo(grids.M.rewards)
+        grids.M.rewards = np.dot(grids.M.features, opt['theta']) 
+        grids.draw_grids(grids.M.rewards)
     
-        theta, policy, mu = al.run(1)
-        print(mu)
-        '''
-        #grids.write_policy_file(policy)
-        #grids.M.rewards = np.dot(grids.M.features, theta) 
-        #grids.draw_grids(grids.M.rewards)
-    
-    def synthesize(self, safety, steps):
+    def synthesize_from_demo_file(self, safety, steps = 64, path = './data/demo_gridworld'):
+        if safety is None:
+            safety = self.safety
+        if steps is None:
+            steps = self.steps
+
         learn = cegal(self.M, safety = safety, steps = steps, max_iter = 30)
+        exp_mu = learn.read_demo_file(path)
 
-        '''
-        theta = np.array([1., 1., 0., 0.])
-        theta = theta/np.linalg.norm(theta, ord = 2)
-        self.M.rewards = np.dot(self.M.features, theta) 
-        mus, policy = self.M.optimal_policy(theta)
-        demo_mu = mus[-2]
-        '''
+        opt, opt_ = self.synthesize(learn = learn, exp_mu = exp_mu, safety = safety, steps = steps)
 
-        theta = np.array([1., 1., -1., -1.])
-        theta = theta/np.linalg.norm(theta, ord = 2)
-        grids.M.rewards = np.dot(grids.M.features, theta) 
-        #grids.demo(grids.M.rewards)
-        os.system('cp ./data/demo_gridworld ./data/demo')
-        demo_mu = learn.read_demo_file('./data/demo')
+        while True:
+            n = raw_input('1. Try weight vector learnt via AL\n\
+2. Try weight vector learnt via SAAL\n3. Quit\n')
+            if n == '1':
+                theta = opt_['theta']
+            elif n == '2':
+                theta = opt['theta']
+            elif n == '3':
+                break
+            else:
+                print("Invalid input")
+                continue
+             
+            grids.M.rewards = np.dot(grids.M.features, theta) 
+            grids.draw_grids(grids.M.rewards)
 
-        opt, opt_ = learn.iteration(exp_mu = demo_mu, opt = None, safety = safety, steps = steps)
+
+    def synthesize(self, learn, exp_mu, opt = None, safety = None, steps = None):
+
+        if safety is None:
+            safety = self.safety
+        if steps is None:
+            steps = self.steps
+
+        opt, opt_ = learn.iteration(exp_mu = exp_mu, opt = None, safety = safety, steps = steps)
         ## cegal.iteration returns SAAL and AL learning results
         ## opt = (diff, theta, policy, mu)
 
@@ -275,25 +297,16 @@ class gridworld(grids, object):
         print(opt['theta'])
         print("\nFeature vector margin: %f" % opt['diff'])
         print("\nPRISM model checking result: %f\n" % opt['prob'])
-        
 
-        
-
-        
-                
-
-        #features = {'cex': [0.2 * demo_mu], 'cand': [0.3 * demo_mu], 'safe': [0.9 * demo_mu]}
-        #w, t = sa.QP(demo_mu, features, 0.5)
-        #print(w)
-        #print(t)
-        
-        
+        return opt, opt_
         
     
+        
 if __name__ == "__main__":
     grids = gridworld()    
 
-    grids.synthesize(safety = 0.01, steps = 64)
+    grids.learn_from_human_demo(steps = 64)
+    grids.synthesize_from_demo_file(safety = 0.1)
 
 
  

@@ -118,7 +118,7 @@ class cegal(apirl, object):
     
         while True:
             cex, prob = self.verify(policy, mus, safety, steps)
-            if cex is None:
+            if prob < safety:
                 opt = {'diff': float('inf'), 
                         'theta': theta, 
                         'policy': policy, 
@@ -131,7 +131,8 @@ class cegal(apirl, object):
                     print("Can't find more counterexample. Return None.")
                     return None
             
-            features['cexs'].append(cex)     
+            if cex is not None:
+                features['cexs'].append(cex)     
         
             theta, _  = self.MOQP(expert = expert, features = features, K = 0)
             theta = theta/np.linalg.norm(theta, ord = 2)
@@ -160,13 +161,14 @@ class cegal(apirl, object):
             mu = opt['mu'].copy()
             cex, prob = self.verify(policy, mus, safety, steps)
             opt['prob'] = prob
-            if cex is None:
+            if prob > unsafe:
                 print("Provided policy is safe. Use as initial safe policy")
                 features['cands'].append(mu.copy())
                 features['safes'].append(mu.copy())
             else:
-                print("Provided policy is not safe. Generating initial safe policy")        
-                features['cexs'].append(cex.copy())
+                print("Provided policy is unsafe. Generating initial safe policy")        
+                if cex is not None:
+                    features['cexs'].append(cex.copy())
                 opt = None
 
         if opt is None:
@@ -199,13 +201,14 @@ class cegal(apirl, object):
         mus = self.M.expected_features_manual()
         cex, prob = self.verify(policy, mus, safety, steps)
         opt_['prob'] = prob
-        if cex is None:
+        if prob < safety:
             print("Apprenticeship learning policy is safe. Return policy.")
             print(theta)
             return opt_, opt_ 
         else:
-            print("Appenticeship learning policy is not safe.Start iteration.")        
-            features['cexs'].append(cex.copy())
+            print("Appenticeship learning policy is unsafe. Start iteration.")        
+            if cex is not None:
+                features['cexs'].append(cex.copy())
 
         err = 0
         itr = 0
@@ -231,6 +234,9 @@ class cegal(apirl, object):
                 print("Stuck in local optimum. End iteration")
                 K = (K + INF)/2.0
                 #break
+                if INF == K:
+                    print("Stuck in local optimum of AL. Return best learnt policy.")
+                    return opt, opt_
             diff_ = diff
 
             itr += 1
@@ -242,6 +248,7 @@ class cegal(apirl, object):
             if prob <= safety: 
                 print("\n>>>>>>>Lastly learnt policy is verified to be safe<<<< %f\n" % prob)
                 diff = np.linalg.norm(mu - exp_mu, ord = 2)
+                print("Feature margin: %f" % diff)
                 if diff <= self.M.epsilon:
                     print("\n>>>>>>>>>>>Converge<<<<<<<<<epsilon-close policy is found. Return.\n")
                     opt = {'diff': diff, 
@@ -394,7 +401,7 @@ class cegal(apirl, object):
 			prob /= len(probs)
   			return prob
 	    except:
-		print "PRISM model checking failed, return None"
+		print("PRISM model checking failed, return None")
 	return None
 
 
@@ -423,7 +430,7 @@ class cegal(apirl, object):
         gamma = self.M.discount
 
 	safety_ = safety
-	print "Removing last counterexample file"
+	print("Removing last counterexample file")
 	os.system('rm counter_example.path')
 	while safety_ > 1e-15:
             self.write_conf_file(safety_)
@@ -432,7 +439,8 @@ class cegal(apirl, object):
 	        file = open('counter_example.path', 'r')
 		break
 	    except:
-		print "No counterexample found for spec = ", safety_, "shrinking down the safey"
+		print("No counterexample found for spec = "\
+ + str(safety_) + ". Lower down the safety threshold.")
 		file = None
 		safety_ = safety_ / 2.0
         if safety_ < 1e-15:
@@ -443,7 +451,7 @@ class cegal(apirl, object):
 	if file is None:
             print("COMICS can't find counterexample!")  
 	    return None #mus[self.M.unsafes[0]]
-	print "Generated counterexample for ", safety_
+	print("Generated counterexample for %f" % safety_)
 	mu_cex = np.zeros(self.M.features[-1].shape)
 	total_p = 0
 	paths = []
@@ -486,13 +494,15 @@ class cegal(apirl, object):
                 
 	    mu_cex = mu_cex + p * mu_path
 	    total_p = total_p + p
-	print "Counterexample for spec = ", safety, ": ",total_p
-	print "Counterexample feature ", mu_cex
+	print("Counterexample for spec = " + str(safety) +  ": " + str(total_p))
+	print("Counterexample feature:")
+        print(mu_cex)
         if total_p > safety or True: ##True for cartpole, False for mountaincar
 	    mu_cex = mu_cex/total_p
         else:
             mu_cex = mu_cex/safety
-	print "Normalized Counterexample feature ", mu_cex
+	print("Normalized Counterexample feature:")
+        print(mu_cex)
 	return mu_cex		
 
 

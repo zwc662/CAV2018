@@ -12,7 +12,6 @@ import math
 import pylab
 from apirl import apirl
 from cegal import cegal
-import util
 
 import ast
 import gym
@@ -66,10 +65,10 @@ class mountaincar(grids, object):
         self.M.unsafe = []
         for s in self.M.S[:-2]:
             coords = self.index_to_coord(s)
-	    if (coords[0] <= 3 \
-                and coords[1] <= self.grids[1]/2 - 3) \
-                or (coords[0] >= self.grids[0] - 4 \
-                and coords[1] >= self.grids[1]/2 + 3):
+	    if (coords[0] <= 4 \
+                and coords[1] <= self.grids[1]/2 - 4) \
+                or (coords[0] >= self.grids[0] - 1 - 4 \
+                and coords[1] >= self.grids[1]/2 + 4):
                 #(-\infty, -1.0] or [1.0, \infty)
 	        self.M.unsafes.append(s)
         #self.M.unsafes.append(self.M.S[-1])
@@ -210,12 +209,34 @@ class mountaincar(grids, object):
         opt = learn.iteration(learn.exp_mu) 
         return opt
 
-    def learn_from_demo_file(self):
-        learn = apirl(self.M, max_iter = 30)
+
+    def learn_from_demo_file(self, steps = 200):
+        learn = cegal(self.M, max_iter = 30)
         learn.exp_mu = learn.read_demo_file('./data/demo_mountaincar') 
         print(learn.exp_mu)
-        opt = learn.iteration(learn.exp_mu) 
+        opt = super(cegal, learn).iteration(learn.exp_mu) 
+        prob = learn.model_check(opt['policy'], steps)
+    
+        print("\n>>>>>>>>Apprenticeship Learning learnt policy weight vector:")
+        print(opt['theta'])
+        print("\nFeature vector margin: %f" % opt['diff'])
+        print("\nPRISM model checking result: %f\n" % prob)
+
+
+        while True:
+            test = raw_input('1. Run AL policy visually\n\
+2. Run AL policy to collect statistical data\n3. Quit\n')
+            if test == '1':
+                self.episode(policy = opt['policy'], steps = steps)
+            elif test == '2':
+                self.test(policy = opt['policy'])
+            elif test == '3':
+                break
+            else:
+                print("Invalid input")
         return opt
+
+
 
     def copy_from_policy_file(self):
         self.M.policy = np.zeros([len(self.M.S), len(self.M.A)])
@@ -353,9 +374,9 @@ class mountaincar(grids, object):
 	    if cut:
 	        while count_down > 0:
 	            count_down -= 1
-		    cut = raw_input("cut!!!")
+		    cut = raw_input("Click Enter!!!")
 		    cut = False
-		cut = raw_input("cut!!!")
+		cut = raw_input("Click Enter for one last time!!!")
 
 
     def demo(self, policy = None, episodes = 5000):
@@ -581,9 +602,10 @@ class mountaincar(grids, object):
         		solver = MDP.PrioritizedSweepingSparseRLModel(model, 0.1, 500);
       	  		policy = MDP.QGreedyPolicy(solver.getQFunction());
 		    if sum(streak) < 80:
-                        paths = list()
-			using = 0
-                        self.M.starts = list()
+                        #paths = list()
+			#using = 0
+                        #self.M.starts = list()
+                        pass
 		    episodes = 0
 		if using > 1000 and i_episode > maxepisodes/2:
 		    break
@@ -640,28 +662,24 @@ if __name__ == "__main__":
 
     #mountaincar.run_tool_box()
     mountaincar.build_MDP_from_file()
+    
 
+    #opt = mountaincar.learn_from_demo_file()
 
-
-    opt = mountaincar.learn_from_demo_file()
-    policy = opt['policy']
-    mountaincar.test(policy = policy)
-    mountaincar.synthesize_from_demo_file(safety = 0.1)
-    '''
+    mountaincar.synthesize_from_demo_file(safety = 0.2)
 
     policy = mountaincar.read_policy_file('./data/policy_mountaincar')
-    real = raw_input("AL policy. Ready? [Y/N]")
+    real = raw_input("Play AL policy. Ready? [Y/N]")
     while real == 'y' or real == 'Y':
         mountaincar.test(policy = policy)
-        real = raw_input("AL policy. Ready? [Y/N]")
+        real = raw_input("Play AL policy again? [Y/N]")
     
 
     policy = mountaincar.read_policy_file('./data/policy_mountaincar_0.1')
-    real = raw_input("SAAL policy. Ready? [Y/N]")
+    real = raw_input("Play SAAL policy. Ready? [Y/N]")
     while real == 'y' or real == 'Y':
         mountaincar.test(policy = policy)
-        real = raw_input("SAAL policy. Ready? [Y/N]")
-    '''
+        real = raw_input("Play SAAL policy again? [Y/N]")
     
 
     

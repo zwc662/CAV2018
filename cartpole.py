@@ -12,7 +12,6 @@ import math
 import pylab
 from apirl import apirl
 from cegal import cegal
-import util
 
 import ast
 import gym
@@ -217,11 +216,30 @@ class cartpole(grids, object):
         opt = learn.iteration(learn.exp_mu) 
         return opt
 
-    def learn_from_demo_file(self):
-        learn = apirl(self.M, max_iter = 30)
+    def learn_from_demo_file(self, steps = 200):
+        learn = cegal(self.M, max_iter = 30)
         learn.exp_mu = learn.read_demo_file('./data/demo_cartpole') 
         print(learn.exp_mu)
-        opt = learn.iteration(learn.exp_mu) 
+        opt = super(cegal, learn).iteration(learn.exp_mu) 
+        prob = learn.model_check(opt['policy'], steps)
+    
+        print("\n>>>>>>>>Apprenticeship Learning learnt policy weight vector:")
+        print(opt['theta'])
+        print("\nFeature vector margin: %f" % opt['diff'])
+        print("\nPRISM model checking result: %f\n" % prob)
+
+
+        while True:
+            test = raw_input('1. Run policy visually\n\
+2. Run policy to collect statistical data\n3. Quit\n')
+            if test == '1':
+                self.episode(policy = opt['policy'], steps = steps)
+            elif test == '2':
+                self.test(policy = opt['policy'])
+            elif test == '3':
+                break
+            else:
+                print("Invalid input")
         return opt
 
     def copy_from_policy_file(self):
@@ -264,8 +282,6 @@ class cartpole(grids, object):
         self.M.policy = np.zeros([len(self.M.S), len(self.M.A)])
         file = open(str(path), 'r')
         lines = file.readlines()
-        print(len(lines))
-        print(len(self.M.S))
         for s in self.M.S:
             line = lines[s].split('\n')[0].split(' ')
             for a in self.M.A:
@@ -337,8 +353,8 @@ class cartpole(grids, object):
             path.append([t, s, a, s_])
 
             if unsafes[s_]:
+                print("Reached unsafe state after steps %d" % t)
                 if demo or safe:
-                    print("End in unsafe state after steps %d" % t)
                     return list()
 
             
@@ -350,10 +366,9 @@ class cartpole(grids, object):
 	    if cut:
 	        while count_down > 0:
 	            count_down -= 1
-		    cut = raw_input("cut!!!")
+		    cut = raw_input("Click Enter!!!")
 		    cut = False
-		cut = raw_input("cut!!!")
-
+		cut = raw_input("Click Enter one last time!!!")
         return path
 
 
@@ -669,23 +684,23 @@ if __name__ == "__main__":
 
     '''
     opt = cartpole.learn_from_demo_file()
-    policy = opt['policy']
-    cartpole.test(policy = policy)
-    '''
+    
     cartpole.synthesize_from_demo_file(safety = 0.1, steps = 200)
     
+    '''
+
     policy = cartpole.read_policy_file('./data/policy_cartpole')
-    real = raw_input("AL policy. Ready? [Y/N]")
+    real = raw_input("Play AL policy. Ready? [Y/N]")
     while real == 'y' or real == 'Y':
-        cartpole.test(policy = policy)
-        real = raw_input("AL policy. Ready? [Y/N]")
+        cartpole.episode(policy = policy)
+        real = raw_input("Play AL policy again? [Y/N]")
     
 
     policy = cartpole.read_policy_file('./data/policy_cartpole_0.1')
-    real = raw_input("SAAL policy. Ready? [Y/N]")
+    real = raw_input("Play SAAL policy. Ready? [Y/N]")
     while real == 'y' or real == 'Y':
-        cartpole.test(policy = policy)
-        real = raw_input("SAAL policy. Ready? [Y/N]")
+        cartpole.episode(policy = policy)
+        real = raw_input("Play SAAL policy again? [Y/N]")
 
     
 
