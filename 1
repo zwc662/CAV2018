@@ -1,0 +1,29 @@
+#! /usr/bin/python
+class a:
+    def __init__(self):
+        self.a = 10
+
+class b(a, object):
+    def __init__(self):
+        super(b, self).__init__()
+        self.b = 11
+
+class c(a, object):
+    def __init__(self):
+        super(c, self).__init__()
+        self.c = 11
+
+
+class d(b, c, object):
+    def __init__(self):
+        super(d, self).__init__()
+        self.d = 11
+
+dd = d()
+print(dd.a)
+
+
+
+
+
+

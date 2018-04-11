@@ -1,0 +1,4 @@
+const int x_end=4;
+const int y_end=5;
+Pmin=? [F x = x_end & y = y_end]
+Pmin=? [x!=x_end|y!=y_end U x = x_end & y = y_end]

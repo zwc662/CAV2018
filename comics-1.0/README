@@ -1,0 +1,65 @@
+This file is outdated, please consult the user manual in order to get
+information about building the sources!
+
+--------BUILDING COMICS 1.0-----------------------------------------------------
+
+In order to build the command-line version of COMICS it is most convenient to 
+use the GNU build system (Autotools). 
+The following non-standard packages have to be installed:
+	• A Java Development Kit (JDK) (You need a complete JDK, not only a JRE!)
+	• GNU Automatic Configure Script Builder (autoconf)
+	• GNU Generic Library Support Script (libtool)
+	• GNU C++ Compiler (g++)
+The GUI comes as a runnable JAR-file but needs the C++-source code to be 
+compiled as JNI shared libraries. 
+If you are inside the comics-1.0 src directory, this will altogether be done by
+executing
+
+	./build comics.sh "path to java"
+
+which is the easiest way to build COMICS. 
+If you add as a parameter your JAVA HOME, which is the path to your JDK 
+installation, or your JAVA HOME is already set system-wide, the necessary
+JNI libraries are built by this script. 
+Please make sure that you have a complete Java Developement Kid installed! 
+If your JDK is, e. g., the OpenJDK Developement Kid, possible ways
+to build COMICS complete and properly are:
+
+	(a) ./build comics.sh /usr/lib/jvm/java-6-openjdk
+
+	(b) export JAVA HOME=/usr/lib/jvm/java-6-openjdk
+	   ./build comics.sh
+
+	(c) ./build comics.sh (and JAVA HOME is already set)
+
+An indication of problems with building the JNI-libraries is the GUI throwing 
+an JAVA exception when calling Model Checking or Search Counterexample. 
+We have tested the compilation process both on 64bit and 32bit Debian systems 
+using
+
+	• OpenJDK Development Kid 6 (openjdk-6-jdk)
+	• GNU Autoconf 2.65
+	• GNU Libtool 2.2.6b
+	• g++ 4.4.3
+
+--------RUNNING COMICS 1.0-----------------------------------------------------
+
+After the C++-sources are successfully built, you can start the command-line 
+version of COMICS by typing
+	
+	./comics.sh
+
+and the GUI-version by typing
+
+	./xcomics.sh
+
+In case of ANY questions or remarks, please contact 
+Nils Jansen: nils.jansen@cs.rwth-aachen.de
+
+COMICS is distributed under the GPL conditions.
+The product comes with ABSOLUTELY NO WARRANTY.
+This is a free software, and you are welcome to redistribute it. See the COPYRIGHT file 
+for details.
+
+The licences of software which is not published under the GPL conditions 
+can be found in the licences folder.
