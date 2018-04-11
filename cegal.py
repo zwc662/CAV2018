@@ -75,7 +75,7 @@ class cegal(apirl, object):
 			G_i_j_k[e] = G_i_j_k[e] + [0.0] * (e + 1) + [-1.0] + [0.0] * (len(expert) + 2 - e - 1)
 		G_i_j_k[len(expert)] = G_i_j_k[len(expert)] + [0.0] * (len(expert) + 3)
 		G_i_j_k[len(expert) + 1] = G_i_j_k[len(expert) + 1] + [0.0] * (len(expert) + 3)
-		h_i_j_k = h_i_j_k + [1] + (2 + len(expert)) * [0.0]
+		h_i_j_k = h_i_j_k + [10] + (2 + len(expert)) * [0.0]
 				#G_i_j[0]= G_i_j[0] + [0., -1., 0., 0., 0.]
 				#G_i_j[1]= G_i_j[1] + [0., 0., -1., 0., 0.]
 				#G_i_j[2]= G_i_j[2] + [0., 0., 0., -1., 0.]
@@ -210,6 +210,7 @@ class cegal(apirl, object):
         err = 0
         itr = 0
         diff_ = float('inf')
+        QP_err = 0
         
         print("\n>>>>>>>>SAAL iteration start. Expert feature vector:")
         print(exp_mu)
@@ -226,10 +227,11 @@ class cegal(apirl, object):
             print("\n>>>>>>>>>Lastly learnt policy weight vector:")
             print(theta)
 
-            #if abs(diff - diff_) < self.M.epsilon:
-            #    print("Stuck in local optimum. End iteration")
-            #    break
-            #diff_ = diff
+            if abs(diff - diff_) < self.M.epsilon:
+                print("Stuck in local optimum. End iteration")
+                K = (K + INF)/2.0
+                #break
+            diff_ = diff
 
             itr += 1
             
@@ -237,7 +239,7 @@ class cegal(apirl, object):
                         
             if itr > 1:
                 cex, prob = self.verify(policy = policy, mus = mus, safety = safety, steps = steps)
-            if cex is None: 
+            if prob <= safety: 
                 print("\n>>>>>>>Lastly learnt policy is verified to be safe<<<< %f\n" % prob)
                 diff = np.linalg.norm(mu - exp_mu, ord = 2)
                 if diff <= self.M.epsilon:
@@ -265,10 +267,11 @@ class cegal(apirl, object):
                     INF = K
                 K = SUP
 
-            if cex is not None:
+            if prob > safety:
                 print("\n>>>>>>>Lastly verified policy is verified to be unsafe<<<< %f\n" % prob)
                 print("Counterexample generated.")
-                features['cexs'].append(cex.copy())     
+                if cex is not None:
+                    features['cexs'].append(cex.copy())     
                 #features['cands'].append(mu)
         
                 K = (K + INF)/2.0
@@ -276,8 +279,15 @@ class cegal(apirl, object):
                 if abs(K - INF) < self.M.epsilon:
                     print("\n>>>>>>>>>>>Converge<<<<<<<<K is too close to INF.\n")
                     return opt, opt_
-            
             theta, _  = self.MOQP(expert = exp_mu, features = features, K = K)
+            '''
+                if QP_err > 10:
+                    print("\nXXXXXXXXXXXXQP numerical errorXXXXXXXXX\n")
+                    return opt, opt_
+                else:
+                    QP_err += 1
+            '''
+        
             theta = theta/np.linalg.norm(theta, ord = 2)
             mus, policy = self.M.optimal_policy(theta)
             mu = mus[-2]
@@ -428,11 +438,11 @@ class cegal(apirl, object):
         if safety_ < 1e-15:
             #raise Exception("COMICS can't find counterexample!")  
             print("COMICS can't find counterexample!")  
-            return mus[self.M.unsafes[0]]
+            return None #mus[self.M.unsafes[0]]
 	#if safety_ <= safety * epsilon**2:
 	if file is None:
             print("COMICS can't find counterexample!")  
-	    return mus[self.M.unsafes[0]]
+	    return None #mus[self.M.unsafes[0]]
 	print "Generated counterexample for ", safety_
 	mu_cex = np.zeros(self.M.features[-1].shape)
 	total_p = 0
@@ -451,7 +461,8 @@ class cegal(apirl, object):
 		else:
 		    path.append(int(state_string))
 	    paths.append(path)
-	for path in range(len(paths)):
+	#for path in range(len(paths)):
+        for path in range(0, 1):
 	    p = paths[path][0]
 	    mu_path = np.zeros(self.M.features[-1].shape)
         
@@ -477,7 +488,7 @@ class cegal(apirl, object):
 	    total_p = total_p + p
 	print "Counterexample for spec = ", safety, ": ",total_p
 	print "Counterexample feature ", mu_cex
-        if total_p > safety:
+        if total_p > safety or True: ##True for cartpole, False for mountaincar
 	    mu_cex = mu_cex/total_p
         else:
             mu_cex = mu_cex/safety

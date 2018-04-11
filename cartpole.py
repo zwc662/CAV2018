@@ -150,8 +150,8 @@ class cartpole(grids, object):
         file.close()
 
     def build_features(self):
-        f = 16
-        self.M.features = np.zeros([len(self.M.S), 4 + f])
+        f = 30
+        self.M.features = np.zeros([len(self.M.S), f])
         feature_states = []
         for i in range(f):
             s = int(len(self.M.S) * i/f)
@@ -159,10 +159,12 @@ class cartpole(grids, object):
        
         for s in self.M.S: 
             coord = self.index_to_coord(s)
+            '''
             self.M.features[s, 0] = math.exp(-1.0 *  coord[0])
             self.M.features[s, 1] = math.exp(-1.0 *  coord[1])
             self.M.features[s, 2] = math.exp(-1.0 *  coord[2])
             self.M.features[s, 3] = math.exp(-1.0 *  coord[3])
+            '''
             y = coord[1] + coord[2] * self.grids[1] + coord[3] * self.grids[2] * self.grids[1]
             x = coord[0]
             for i in range(f):
@@ -172,10 +174,10 @@ class cartpole(grids, object):
                 x_ = coord_[0]
                 #y_ = feature_states[i]/self.grids[0]
                 #x_ = feature_states[i]%self.grids[0]
-                self.M.features[s, i + 4] = math.exp(-0.25 * math.sqrt((1.0 * y - y_)**2 + (1.0 * x - x_)**2))
+                self.M.features[s, i] = math.exp(-0.25 * math.sqrt((1.0 * y - y_)**2 + (1.0 * x - x_)**2))
         
-        self.M.features[-2] = self.M.features[-2] * 0.0
-        self.M.features[-1] = self.M.features[-1] * 0.0
+        #self.M.features[-2] = self.M.features[-2] * 0.0
+        #self.M.features[-1] = self.M.features[-1] * 0.0
 
 
     def build_MDP_from_file(self):
@@ -324,6 +326,7 @@ class cartpole(grids, object):
        	    # Act
       	    o1, rew, done, info = env.step(a);
 	    if done:
+                #if not safe:
                 print("End after steps %d" % t)
                 return path
                     
@@ -336,7 +339,7 @@ class cartpole(grids, object):
             if unsafes[s_]:
                 if demo or safe:
                     print("End in unsafe state after steps %d" % t)
-                    return path
+                    return list()
 
             
      	    # Record information, and then run PrioritizedSweeping
@@ -383,9 +386,10 @@ class cartpole(grids, object):
         while i_episode <= episodes:
             print("Episode %d" % i_episode)
             path = self.episode(safe = True, policy = policy)
-            dead += len(path)
+            if len(path) == 0:
+                dead += 1
             i_episode += 1
-        dead /= episodes
+        dead = dead/episodes
 
         avg = 0
         i_episode = 0
@@ -660,21 +664,28 @@ class cartpole(grids, object):
     
 if __name__ == "__main__":
     cartpole = cartpole()
-
-    cartpole.run_tool_box()
-
+    #cartpole.run_tool_box()
     cartpole.build_MDP_from_file()
 
-    #cartpole.episode(demo = False, policy = cartpole.M.policy)
-    #cartpole.demo()
-
+    '''
     opt = cartpole.learn_from_demo_file()
     policy = opt['policy']
     cartpole.test(policy = policy)
+    '''
+    cartpole.synthesize_from_demo_file(safety = 0.1, steps = 200)
+    
+    policy = cartpole.read_policy_file('./data/policy_cartpole')
+    real = raw_input("AL policy. Ready? [Y/N]")
+    while real == 'y' or real == 'Y':
+        cartpole.test(policy = policy)
+        real = raw_input("AL policy. Ready? [Y/N]")
+    
 
-    cartpole.synthesize_from_demo_file(safety = 0.15, steps = 200)
-
-    #policy = cartpole.read_policy_file('./data/policy_cartpole_0.3')
+    policy = cartpole.read_policy_file('./data/policy_cartpole_0.1')
+    real = raw_input("SAAL policy. Ready? [Y/N]")
+    while real == 'y' or real == 'Y':
+        cartpole.test(policy = policy)
+        real = raw_input("SAAL policy. Ready? [Y/N]")
 
     
 
