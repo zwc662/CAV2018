@@ -43,8 +43,8 @@ class gridworld(grids, object):
         self.M.targets.append(self.coord_to_index([self.dim - 1, self.dim - 1]))
         self.M.targets.append(self.coord_to_index([self.dim - 1, self.dim - 2]))
 
-        self.M.unsafes.append(self.coord_to_index([self.dim - 2, 2]))
-        self.M.unsafes.append(self.coord_to_index([2, self.dim - 2]))
+        self.M.unsafes.append(self.coord_to_index([self.dim - 1, 2]))
+        self.M.unsafes.append(self.coord_to_index([2, self.dim - 1]))
 
 	for x in range(self.dim/2, self.dim):
 		for y in range(0, self.dim):
@@ -171,7 +171,9 @@ class gridworld(grids, object):
 		    next
 		elif action == 0:
                     print("Trajectory ends")
-                    file.write(str(t) + ' ' + str(state) + ' ' + str(action) + ' ' + str(state) + '\n')
+                    while t < steps:
+                        file.write(str(t) + ' ' + str(state) + ' ' + str(action) + ' ' + str(state) + '\n')
+                        t += 1
 		    pylab.ioff()
 		    pylab.close('all')
 		    break

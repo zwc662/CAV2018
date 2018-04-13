@@ -55,6 +55,15 @@ class apirl():
             mu_temp = mu_temp + self.M.features[s] * (self.M.discount**t)
             t_ = t
         file.close()
+
+        diff = float('inf')
+        while diff > self.M.epsilon:
+            t_ += 1         
+            diff = self.M.features[s] * self.M.discount**t_
+            mu_temp += diff
+            diff = np.linalg.norm(diff, ord = 2)
+        exp_mu += mu_temp
+
         exp_mu = exp_mu/num_paths
 
         init_dist /= num_paths
@@ -119,7 +128,7 @@ class apirl():
         features = list()
 
         print("Generating initial policy for AL")
-        theta = np.random.random((len(self.M.features[0])))
+        theta = np.ones((len(self.M.features[0])))
         theta = theta/np.linalg.norm(theta, ord = 2)
         print("Initial policy weight vector:")
         print(theta)

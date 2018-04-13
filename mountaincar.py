@@ -29,13 +29,13 @@ import MDP
 env = gym.make('MountainCar-v0')
 
 class mountaincar(grids, object):
-    def __init__(self):
+    def __init__(self, steps = 200, combo = 0, safety = 0.5):
         if sys.version_info[0] >= 3:  
             super().__init__()
         else:
             super(mountaincar, self).__init__()
 
-        self.grids = [38, 30]
+        self.grids = [20, 16]
 
         ranges = [[-1.2, 0.6], [-0.07, 0.07]] 
         self.build_threshes(ranges)
@@ -51,24 +51,38 @@ class mountaincar(grids, object):
 
         self.set_unsafe()
 
-        self.steps = 200
+        self.safety = safety
+
+    
         self.maxepisodes = 100000
 
-        self.combo = 2
+        self.steps = steps
+        self.combo = combo
 
-        self.steps = int(self.steps/(self.combo + 1))
-        if self.steps * (self.combo + 1) < 200:
-	    self.steps = self.steps + 1
+        self.steps = int(self.steps/(self.combo + 1)) + 1
+        #if self.steps * (self.combo + 1) < 67:
+        #self.steps = self.steps + 1
 
+        self.opt = {}
+
+
+
+    def set_initial_opt(self):
+        self.opt['policy'] = np.zeros([len(self.M.S), len(self.M.A)])
+        self.opt['policy'][:, 1] = 1.0
+
+        self.M.set_policy(self.opt['policy'])
+        self.opt['mu'] = self.M.expected_features_manual()[-2]
+        self.opt['theta'] = list()
     
     def set_unsafe(self):
         self.M.unsafe = []
         for s in self.M.S[:-2]:
             coords = self.index_to_coord(s)
-	    if (coords[0] <= 4 \
-                and coords[1] <= self.grids[1]/2 - 4) \
-                or (coords[0] >= self.grids[0] - 1 - 4 \
-                and coords[1] >= self.grids[1]/2 + 4):
+	    if (coords[0] <= 3 * (self.grids[0] - 2)/18.0 \
+            and coords[1] <= (7 - 3) * (self.grids[1] - 2)/14.0) \
+            or (coords[0] >=  (18 - 3) * (self.grids[0] - 2)/18.0 \
+            and coords[1] >= (7 + 3) * (self.grids[0] - 2)/14.0):
                 #(-\infty, -1.0] or [1.0, \infty)
 	        self.M.unsafes.append(s)
         #self.M.unsafes.append(self.M.S[-1])
@@ -92,11 +106,14 @@ class mountaincar(grids, object):
 
         self.M.set_initial_transitions()
 
+
         self.M.output()
         os.system('cp ./data/state_space ./data/state_space_mountaincar')
         os.system('cp ./data/unsafe ./data/unsafe_mountaincar')
         os.system('cp ./data/mdp ./data/mdp_mountaincar')
         os.system('cp ./data/start ./data/start_mountaincar')
+
+        self.set_initial_opt()
 
     def read_MDP_file_old(self):
         file = open('./data/MDP_mountaincar', 'r')
@@ -148,7 +165,7 @@ class mountaincar(grids, object):
         file.close()
 
     def build_features(self):
-        f = 28
+        f = 18
         self.M.features = np.zeros([len(self.M.S), 2 + f])
         feature_states = []
         for i in range(f):
@@ -190,6 +207,9 @@ class mountaincar(grids, object):
 
         self.M.output()
 
+        self.set_initial_opt()
+
+
     def learn_from_feature_file(self):
         learn = apirl(self.M, max_iter = 30)
 
@@ -210,7 +230,9 @@ class mountaincar(grids, object):
         return opt
 
 
-    def learn_from_demo_file(self, steps = 200):
+    def learn_from_demo_file(self, steps = None):
+        if steps is None:
+            steps = self.steps
         learn = cegal(self.M, max_iter = 30)
         learn.exp_mu = learn.read_demo_file('./data/demo_mountaincar') 
         print(learn.exp_mu)
@@ -284,6 +306,7 @@ class mountaincar(grids, object):
                 self.M.policy[s, a] = float(line[a])
         file.close()
         self.M.set_policy()
+        return self.M.policy
         
     def learn_from_policy_file(self):
         learn = apirl(self.M, max_iter = 50)
@@ -309,6 +332,9 @@ class mountaincar(grids, object):
         
         if policy is None:
             policy = self.M.policy
+    
+        #steps = 67
+        #self.combo = 0
 
         unsafes = np.zeros([len(self.M.S)]).astype(bool)
         for s in self.M.unsafes:
@@ -347,7 +373,7 @@ class mountaincar(grids, object):
 
                 if unsafes[s_]:
                     path.append([t, s, a, s_])
-                    print("End in unsafe state after steps %d" % t)
+                    print("Reach unsafe state after steps %d" % t)
                     if demo or safe:
                         return list()
 
@@ -358,7 +384,7 @@ class mountaincar(grids, object):
             path.append([t, s, a, s_])
 
             if unsafes[s_]:
-                print("End in unsafe state after steps %d" % t)
+                print("Reach unsafe state after steps %d" % t)
                 if demo or safe:
                     return list()
 
@@ -377,7 +403,8 @@ class mountaincar(grids, object):
 		    cut = raw_input("Click Enter!!!")
 		    cut = False
 		cut = raw_input("Click Enter for one last time!!!")
-
+        print("Used up %d" % len(path))
+        return path
 
     def demo(self, policy = None, episodes = 5000):
         os.system('rm ./data/demo_mountaincar')
@@ -403,7 +430,7 @@ class mountaincar(grids, object):
         dead = 0.0 
         i_episode = 0
 
-        while i_episode <= episodes:
+        while i_episode < episodes:
             print("Episode %d" % i_episode)
             path = self.episode(safe = True, policy = policy)
             if len(path) == 0:
@@ -416,6 +443,8 @@ class mountaincar(grids, object):
         while i_episode < episodes:
             print("Episode %d" % i_episode)
             path  = self.episode(performance =True, policy = policy)
+            if len(path) <= 0:
+                raise "Error: path length <= 0"
             avg += len(path)
             i_episode += 1
         avg /= episodes
@@ -423,7 +452,7 @@ class mountaincar(grids, object):
         print('Unsafe ratio: %f' % dead)
         print("Average step length: %f" % avg)
 
-    def synthesize_from_demo_file(self, safety = 0.3, steps = 200, path = './data/demo_mountaincar'):
+    def synthesize_from_demo_file(self, safety = None, steps = None, path = './data/demo_mountaincar'):
         if safety is None:
             safety = self.safety
         if steps is None:
@@ -458,12 +487,14 @@ class mountaincar(grids, object):
             
 
     def synthesize(self, learn, exp_mu, opt = None, safety = None, steps = None):
+        if opt is None:
+            opt = self.opt
         if safety is None:
             safety = self.safety
         if steps is None:
             steps = self.steps
 
-        opt, opt_ = learn.iteration(exp_mu = exp_mu, opt = None, safety = safety, steps = steps)
+        opt, opt_ = learn.iteration(exp_mu = exp_mu, opt = opt, safety = safety, steps = steps)
         ## cegal.iteration returns SAAL and AL learning results
         ## opt = (diff, theta, policy, mu)
 
@@ -532,16 +563,21 @@ class mountaincar(grids, object):
         	        o_, rew, done, info = env.step(a);
         	        # See where we arrived
         	        s_ = self.observation_to_index(o_);
+                        #path.append([(self.combo + 1) * t + i, s, a, s_])
+                        #self.M.T[a][s, s_] += 1.0
 
                         if unsafes[s_]:
-                            self.M.T[a][s, s_] += 1.0
 		            dead = True
+
+                        if done:
+                            break
 
         	    o_, rew, done, info = env.step(a);
         	    # See where we arrived
         	    s_ = self.observation_to_index(o_);
 
                     self.M.T[a][s, s_] += 1.0
+                    #path.append([(self.combo + 1) * t + self.combo, s, a, s_])
                     path.append([t, s, a, s_])
 
                     if unsafes[s_]:
@@ -565,7 +601,7 @@ class mountaincar(grids, object):
                 # always 1.0, so there would be no way for the agent to distinguish
                 # between bad actions and good actions.
                 if t >= self.steps - 1:
-                    rew = -200
+                    rew = -100
                     tag ='xxx'
 		    streak.append(0)
                 else:
@@ -610,7 +646,7 @@ class mountaincar(grids, object):
 		if using > 1000 and i_episode > maxepisodes/2:
 		    break
 
-	    	print "Episode {} finished after {} timecoords {} win:{} use:{}".format(i_episode, t+1, tag, win, using)
+	    	print "Episode {} finished after {} timecoords {} win:{} use:{}".format(i_episode, len(path), tag, win, using)
 
 	
         file = open('./data/start_mountaincar', 'w')
@@ -643,7 +679,7 @@ class mountaincar(grids, object):
         file.close()
 
         file = open('./data/state_space_mountaincar', 'w')
-        file.write('states\n' + str(len(self.M.S)) + '\nactions' + str(len(self.M.A)))
+        file.write('states\n' + str(len(self.M.S)) + '\nactions\n' + str(len(self.M.A)))
         file.close()
 
         file = open('./data/demo_mountaincar', 'w')
@@ -654,33 +690,94 @@ class mountaincar(grids, object):
                             + str(path[t][2]) + ' '
                             + str(path[t][3]) + '\n')
         file.close()
+
+    def model_check(self, policy, safety = None, steps = None):
+        if steps is None:
+            steps = self.steps
+        if safety is None:
+            safety = self.safety
+        learn = cegal(self.M, max_iter = 50, safety = safety, steps = steps)
+        prob = learn.model_check(policy, steps)
+        print("Unsafe probability: %f" % prob)
+        
         
 
     
 if __name__ == "__main__":
-    mountaincar = mountaincar()
+    safety = 0.35
+    steps = 200
+    combo = 2
 
+    mountaincar = mountaincar(safety = safety, combo = combo, steps = steps)
     #mountaincar.run_tool_box()
-    mountaincar.build_MDP_from_file()
     
+    mountaincar.build_MDP_from_file()
 
-    #opt = mountaincar.learn_from_demo_file()
+    #mountaincar.learn_from_demo_file()
 
-    mountaincar.synthesize_from_demo_file(safety = 0.2)
+    mountaincar.synthesize_from_demo_file(safety)
 
+    
+    
     policy = mountaincar.read_policy_file('./data/policy_mountaincar')
+    prob = mountaincar.model_check(policy, steps)
     real = raw_input("Play AL policy. Ready? [Y/N]")
     while real == 'y' or real == 'Y':
         mountaincar.test(policy = policy)
         real = raw_input("Play AL policy again? [Y/N]")
     
-
-    policy = mountaincar.read_policy_file('./data/policy_mountaincar_0.1')
+    
+    policy = mountaincar.read_policy_file('./data/policy_mountaincar_' + str(safety))
+    prob = mountaincar.model_check(policy, steps)
     real = raw_input("Play SAAL policy. Ready? [Y/N]")
     while real == 'y' or real == 'Y':
         mountaincar.test(policy = policy)
         real = raw_input("Play SAAL policy again? [Y/N]")
     
+    safety = 0.1
+    policy = mountaincar.read_policy_file('./data/policy_mountaincar_' + str(safety))
+    prob = mountaincar.model_check(policy, steps)
+    real = raw_input("Play SAAL policy. Ready? [Y/N]")
+    while real == 'y' or real == 'Y':
+        mountaincar.episode(policy = policy, steps = steps)
+        #mountaincar.demo(policy = policy)
+        real = raw_input("Play SAAL policy again? [Y/N]")
 
-    
+    '''
+    safety = 0.2
+    policy = mountaincar.read_policy_file('./data/policy_mountaincar_' + str(safety))
+    prob = mountaincar.model_check(policy, steps)
+    real = raw_input("Play SAAL policy. Ready? [Y/N]")
+    while real == 'y' or real == 'Y':
+        mountaincar.episode(policy = policy, steps = steps)
+        #mountaincar.test(policy = policy)
+        real = raw_input("Play SAAL policy again? [Y/N]")
 
+
+    safety = 0.3
+    policy = mountaincar.read_policy_file('./data/policy_mountaincar_' + str(safety))
+    prob = mountaincar.model_check(policy, steps)
+    real = raw_input("Play SAAL policy. Ready? [Y/N]")
+    while real == 'y' or real == 'Y':
+        mountaincar.episode(policy = policy, steps = steps)
+        #mountaincar.test(policy = policy)
+        real = raw_input("Play SAAL policy again? [Y/N]")
+
+    safety = 0.4
+    policy = mountaincar.read_policy_file('./data/policy_mountaincar_' + str(safety))
+    prob = mountaincar.model_check(policy, steps)
+    real = raw_input("Play SAAL policy. Ready? [Y/N]")
+    while real == 'y' or real == 'Y':
+        #mountaincar.test(policy = policy)
+        mountaincar.episode(policy = policy, steps = steps)
+        real = raw_input("Play SAAL policy again? [Y/N]")
+
+    safety = 0.5
+    policy = mountaincar.read_policy_file('./data/policy_mountaincar_' + str(safety))
+    prob = mountaincar.model_check(policy, steps)
+    real = raw_input("Play SAAL policy. Ready? [Y/N]")
+    while real == 'y' or real == 'Y':
+        #mountaincar.test(policy = policy)
+        mountaincar.episode(policy = policy, steps = steps)
+        real = raw_input("Play SAAL policy again? [Y/N]")
+    '''

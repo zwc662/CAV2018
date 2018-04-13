@@ -46,7 +46,7 @@ class cegal(apirl, object):
 		for e in range(len(expert) + 2):
 			G_i_j_k.append([])
 		h_i_j_k = []
-		c = matrix(- ((K) * np.eye(len(expert) + 2)[-2] + (1 - K) * np.eye(len(expert) + 2)[-1]))
+		c = matrix(- ((1000 * K) * np.eye(len(expert) + 2)[-2] + 1000 * (1 - K) * np.eye(len(expert) + 2)[-1]))
 
 		for m in range(len(cands)):
 			for e in range(len(expert)):
@@ -75,7 +75,7 @@ class cegal(apirl, object):
 			G_i_j_k[e] = G_i_j_k[e] + [0.0] * (e + 1) + [-1.0] + [0.0] * (len(expert) + 2 - e - 1)
 		G_i_j_k[len(expert)] = G_i_j_k[len(expert)] + [0.0] * (len(expert) + 3)
 		G_i_j_k[len(expert) + 1] = G_i_j_k[len(expert) + 1] + [0.0] * (len(expert) + 3)
-		h_i_j_k = h_i_j_k + [10] + (2 + len(expert)) * [0.0]
+	        h_i_j_k = h_i_j_k + [1000.0] + (2 + len(expert)) * [0.0]
 				#G_i_j[0]= G_i_j[0] + [0., -1., 0., 0., 0.]
 				#G_i_j[1]= G_i_j[1] + [0., 0., -1., 0., 0.]
 				#G_i_j[2]= G_i_j[2] + [0., 0., 0., -1., 0.]
@@ -156,12 +156,14 @@ class cegal(apirl, object):
 
         if opt is not None:
             print("Verify provided policy")
-            theta = opt['theta'].copy()
-            policy = opt['policy'].copy()
-            mu = opt['mu'].copy()
+            theta = opt['theta']
+            policy = opt['policy']
+            mu = opt['mu']
+            self.M.set_policy(policy)
+            mus = self.M.expected_features_manual()
             cex, prob = self.verify(policy, mus, safety, steps)
             opt['prob'] = prob
-            if prob > unsafe:
+            if prob < safety:
                 print("Provided policy is safe. Use as initial safe policy")
                 features['cands'].append(mu.copy())
                 features['safes'].append(mu.copy())
@@ -178,7 +180,7 @@ class cegal(apirl, object):
                 print("Failed to find a safe policy")
                 return None
         print("Initial safe policy is generated.")
-        theta = opt['theta'].copy()
+        theta = opt['theta']
         policy = opt['prob']
         mu = opt['mu'].copy()
         diff = np.linalg.norm(mu - exp_mu, ord = 2)
@@ -229,10 +231,11 @@ class cegal(apirl, object):
 
             print("\n>>>>>>>>>Lastly learnt policy weight vector:")
             print(theta)
-
-            if abs(diff - diff_) < self.M.epsilon:
-                print("Stuck in local optimum. End iteration")
-                K = (K + INF)/2.0
+            
+           
+            if INF == K and abs(diff - diff_) < self.M.epsilon:
+                #print("Stuck in local optimum. End iteration")
+                #K = (K + INF)/2.0
                 #break
                 if INF == K:
                     print("Stuck in local optimum of AL. Return best learnt policy.")
@@ -270,7 +273,7 @@ class cegal(apirl, object):
                     features['cands'].append(mu.copy())
                     features['safes'].append(mu.copy())
 
-                if K != SUP:
+                if True or K != SUP:
                     INF = K
                 K = SUP
 
@@ -355,7 +358,7 @@ class cegal(apirl, object):
 
     def model_check(self, policy = None, steps = None):
         if policy is None:
-            policy = self.policy.copy()
+            policy = self.M.policy.copy()
         if steps is None:
             steps = self.steps
 
@@ -469,8 +472,8 @@ class cegal(apirl, object):
 		else:
 		    path.append(int(state_string))
 	    paths.append(path)
-	#for path in range(len(paths)):
-        for path in range(0, 1):
+        for path in range(len(paths)):
+        #for path in range(0, 1):
 	    p = paths[path][0]
 	    mu_path = np.zeros(self.M.features[-1].shape)
         
