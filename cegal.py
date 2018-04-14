@@ -94,6 +94,7 @@ class cegal(apirl, object):
 			solution=solution.reshape(len(expert) + 2)
 			t=(1 - K) * solution[-1] + K * solution[-2]
 			w=solution[:-2]
+                        t /= np.linalg.norm(w, ord = 2)
 		else:
 			solution = None
 			t = None
@@ -114,7 +115,7 @@ class cegal(apirl, object):
         theta = np.random.random((len(self.M.features[0])))
         theta = theta/np.linalg.norm(theta, ord = 2)
         mus, policy = self.M.optimal_policy(theta)
-        mu = mus[-2]
+        mu = mus[-2].copy()
     
         while True:
             cex, prob = self.verify(policy, mus, safety, steps)
@@ -125,6 +126,14 @@ class cegal(apirl, object):
                         'mu':mu, 
                         'prob': prob} 
                 print(theta)
+                '''
+                file = open('init_cartpole', 'w')
+                for s in self.M.S:
+                    for a in self.M.A:
+                        file.write(str(policy[s, a]) + ' ')
+                    file.write('\n')
+                file.close()
+                '''
                 return opt 
             if len(features['cexs']) > 1:
                 if np.linalg.norm(features['cexs'][-1] - cex, ord = 2) < self.M.epsilon:
@@ -137,7 +146,7 @@ class cegal(apirl, object):
             theta, _  = self.MOQP(expert = expert, features = features, K = 0)
             theta = theta/np.linalg.norm(theta, ord = 2)
             mus, policy = self.M.optimal_policy(theta)
-            mu = mus[-2]
+            mu = mus[-2].copy()
              
         
 
@@ -156,11 +165,11 @@ class cegal(apirl, object):
 
         if opt is not None:
             print("Verify provided policy")
-            theta = opt['theta']
-            policy = opt['policy']
-            mu = opt['mu']
+            theta = np.array(opt['theta'])
+            policy = opt['policy'].copy()
+            mu = opt['mu'].copy()
             self.M.set_policy(policy)
-            mus = self.M.expected_features_manual()
+            mus = self.M.expected_features_manual().copy()
             cex, prob = self.verify(policy, mus, safety, steps)
             opt['prob'] = prob
             if prob < safety:
@@ -180,7 +189,7 @@ class cegal(apirl, object):
                 print("Failed to find a safe policy")
                 return None
         print("Initial safe policy is generated.")
-        theta = opt['theta']
+        theta = np.array(opt['theta'])
         policy = opt['prob']
         mu = opt['mu'].copy()
         diff = np.linalg.norm(mu - exp_mu, ord = 2)
@@ -196,11 +205,11 @@ class cegal(apirl, object):
 
         print("Run apprenticeship learning to start iteration.")
         opt_ = super(cegal, self).iteration(exp_mu) 
-        theta = opt_['theta'].copy()
+        theta = np.array(opt_['theta'])
         policy = opt_['policy'].copy()
         mu = opt_['mu'].copy()
         self.M.set_policy(policy)
-        mus = self.M.expected_features_manual()
+        mus = self.M.expected_features_manual().copy()
         cex, prob = self.verify(policy, mus, safety, steps)
         opt_['prob'] = prob
         if prob < safety:
@@ -255,14 +264,14 @@ class cegal(apirl, object):
                 if diff <= self.M.epsilon:
                     print("\n>>>>>>>>>>>Converge<<<<<<<<<epsilon-close policy is found. Return.\n")
                     opt = {'diff': diff, 
-                            'theta': theta.copy(), 
+                            'theta': np.array(theta), 
                             'policy': policy.copy(), 
                             'mu':mu.copy(), 
                             'prob': prob} 
                     return opt, opt_
                 elif diff <= opt['diff']:
                     opt = {'diff': diff, 
-                            'theta': theta.copy(), 
+                            'theta': np.array(theta), 
                             'policy': policy.copy(), 
                             'mu':mu.copy(), 
                             'prob': prob} 
@@ -300,7 +309,7 @@ class cegal(apirl, object):
         
             theta = theta/np.linalg.norm(theta, ord = 2)
             mus, policy = self.M.optimal_policy(theta)
-            mu = mus[-2]
+            mu = mus[-2].copy()
 
         return opt, opt_
 

@@ -29,6 +29,7 @@ class apirl():
         t = 0
         t_ = 0
 
+        avg = 0
         init_dist = np.zeros((len(self.M.S))) 
 
         file = open(str(paths), 'r')
@@ -36,6 +37,7 @@ class apirl():
             line = line_str.split('\n')[0].split(' ')
             t = int(float(line[0]))
             if t == 0:
+                avg += t_
                 diff = float('inf')
                 while diff > self.M.epsilon:
                     t_ += 1         
@@ -45,7 +47,7 @@ class apirl():
                 exp_mu = exp_mu + mu_temp       
                 num_paths += 1
 
-                mu_temp = self.M.features[-2]
+                mu_temp = self.M.features[-2].copy()
                 t += 1
 
             s = int(float(line[1]))
@@ -65,11 +67,13 @@ class apirl():
         exp_mu += mu_temp
 
         exp_mu = exp_mu/num_paths
+        avg = avg/num_paths
 
         init_dist /= num_paths
         self.M.set_initial_transitions(init_dist)
 
         print("%d demonstrated paths in total" % num_paths)
+        print("Average step length is %d" % avg)
         print("Expert expected features are:")
         print(exp_mu)
         return exp_mu
@@ -133,9 +137,8 @@ class apirl():
         print("Initial policy weight vector:")
         print(theta)
 
-        self.M.rewards = np.dot(self.M.features, theta).copy() 
         mus, policy = self.M.optimal_policy(theta.copy())
-        mu = mus[-2]
+        mu = mus[-2].copy()
         print("Initial policy feature vector:")
         print(mu)
 
@@ -183,7 +186,7 @@ class apirl():
             print(theta)
 
             mus, policy  = self.M.optimal_policy(theta)
-            mu = mus[-2]
+            mu = mus[-2].copy()
             print("New candidate policy feature vector:")
             print(mu)
 

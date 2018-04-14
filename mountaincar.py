@@ -615,6 +615,7 @@ class mountaincar(grids, object):
                         paths.append(path)
                         if not starts[s_i]:
                             self.M.starts.append(s_i)
+                            starts[s_i] = True
 
   		if len(streak) > 100:
       			streak.pop(0)
@@ -704,11 +705,12 @@ class mountaincar(grids, object):
 
     
 if __name__ == "__main__":
-    safety = 0.35
+    safety = 0.4
     steps = 200
     combo = 2
 
     mountaincar = mountaincar(safety = safety, combo = combo, steps = steps)
+
     #mountaincar.run_tool_box()
     
     mountaincar.build_MDP_from_file()
@@ -719,6 +721,7 @@ if __name__ == "__main__":
 
     
     
+    steps = 200/(combo + 1)
     policy = mountaincar.read_policy_file('./data/policy_mountaincar')
     prob = mountaincar.model_check(policy, steps)
     real = raw_input("Play AL policy. Ready? [Y/N]")
@@ -734,50 +737,40 @@ if __name__ == "__main__":
         mountaincar.test(policy = policy)
         real = raw_input("Play SAAL policy again? [Y/N]")
     
-    safety = 0.1
+    safety = 0.35
     policy = mountaincar.read_policy_file('./data/policy_mountaincar_' + str(safety))
     prob = mountaincar.model_check(policy, steps)
     real = raw_input("Play SAAL policy. Ready? [Y/N]")
     while real == 'y' or real == 'Y':
-        mountaincar.episode(policy = policy, steps = steps)
+        mountaincar.test(policy = policy)
         #mountaincar.demo(policy = policy)
         real = raw_input("Play SAAL policy again? [Y/N]")
-
-    '''
-    safety = 0.2
-    policy = mountaincar.read_policy_file('./data/policy_mountaincar_' + str(safety))
-    prob = mountaincar.model_check(policy, steps)
-    real = raw_input("Play SAAL policy. Ready? [Y/N]")
-    while real == 'y' or real == 'Y':
-        mountaincar.episode(policy = policy, steps = steps)
-        #mountaincar.test(policy = policy)
-        real = raw_input("Play SAAL policy again? [Y/N]")
-
 
     safety = 0.3
     policy = mountaincar.read_policy_file('./data/policy_mountaincar_' + str(safety))
     prob = mountaincar.model_check(policy, steps)
     real = raw_input("Play SAAL policy. Ready? [Y/N]")
     while real == 'y' or real == 'Y':
-        mountaincar.episode(policy = policy, steps = steps)
-        #mountaincar.test(policy = policy)
+        #mountaincar.episode(policy = policy, steps = steps)
+        mountaincar.test(policy = policy)
         real = raw_input("Play SAAL policy again? [Y/N]")
 
-    safety = 0.4
+
+    safety = 0.2
     policy = mountaincar.read_policy_file('./data/policy_mountaincar_' + str(safety))
     prob = mountaincar.model_check(policy, steps)
     real = raw_input("Play SAAL policy. Ready? [Y/N]")
     while real == 'y' or real == 'Y':
-        #mountaincar.test(policy = policy)
-        mountaincar.episode(policy = policy, steps = steps)
+        #mountaincar.episode(policy = policy, steps = steps)
+        mountaincar.test(policy = policy)
         real = raw_input("Play SAAL policy again? [Y/N]")
 
-    safety = 0.5
+    safety = 0.1
     policy = mountaincar.read_policy_file('./data/policy_mountaincar_' + str(safety))
     prob = mountaincar.model_check(policy, steps)
     real = raw_input("Play SAAL policy. Ready? [Y/N]")
     while real == 'y' or real == 'Y':
-        #mountaincar.test(policy = policy)
-        mountaincar.episode(policy = policy, steps = steps)
+        mountaincar.test(policy = policy)
+        #mountaincar.episode(policy = policy, steps = steps)
         real = raw_input("Play SAAL policy again? [Y/N]")
-    '''
+

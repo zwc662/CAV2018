@@ -35,7 +35,22 @@ class gridworld(grids, object):
  
         self.M = mdp(self.dim**2 + 2, 5)
 
-        self.build_mdp()
+    def build_mdp_from_file(self):
+        os.system('cp ./data/state_space_gridworld ./data/state_space')
+        os.system('cp ./data/unsafe_gridworld ./data/unsafe')
+        os.system('cp ./data/mdp_gridworld ./data/mdp')
+        os.system('cp ./data/start_gridworld ./data/start')
+        self.M.input()
+
+        self.M.targets.append(self.coord_to_index([self.dim - 1, self.dim - 1]))
+        self.M.targets.append(self.coord_to_index([self.dim - 1, self.dim - 2]))
+
+        self.build_features()
+        
+        self.M.set_initial_transitions()
+
+        self.M.output()
+
 
     def build_mdp(self):
         self.M.starts = [0]
@@ -43,8 +58,8 @@ class gridworld(grids, object):
         self.M.targets.append(self.coord_to_index([self.dim - 1, self.dim - 1]))
         self.M.targets.append(self.coord_to_index([self.dim - 1, self.dim - 2]))
 
-        self.M.unsafes.append(self.coord_to_index([self.dim - 1, 2]))
-        self.M.unsafes.append(self.coord_to_index([2, self.dim - 1]))
+        self.M.unsafes.append(self.coord_to_index([self.dim - 3, 2]))
+        self.M.unsafes.append(self.coord_to_index([2, self.dim - 3]))
 
 	for x in range(self.dim/2, self.dim):
 		for y in range(0, self.dim):
@@ -54,7 +69,6 @@ class gridworld(grids, object):
 		for x in range(0, self.dim):
 			if y >= x + 3:
 				self.M.unsafes.append(self.coord_to_index([y, x]))
-
 
         self.build_features()
 
@@ -209,17 +223,44 @@ class gridworld(grids, object):
             start = raw_input("Human demonstrate? [Y/N]")
 
         
+    def policy_simulation(self, policy = None, max_iter = 10000):
+        if policy is None:
+            policy = self.M.policy
+
+        exp_mu = np.zeros((len(self.M.features[0])))
+        diff = float('inf')
+        itr = 0
+        while diff > self.M.epsilon and itr < max_iter:
+            exp_mu_ = exp_mu.copy()
+            itr += 1
+
+            diff_ = float('inf')
+            s = self.M.S[-2]
+            mu = self.M.features[s].copy()
+            t = 0
+            while diff_ > self.M.epsilon:
+                mu_ = mu.copy()
+                t += 1
+                a = policy[s].argmax()
+                s = self.M.move(s, a)
+                mu += self.M.features[s] * self.M.discount**t
+                diff_ = np.linalg.norm(mu - mu_, ord = 2)
+            exp_mu = (exp_mu * (itr - 1) + mu)/itr
+            diff = np.linalg.norm(exp_mu - exp_mu_, ord = 2)
+        
+        return exp_mu
+        
          
     def learn_from_human_demo(self, steps = 64):        
         if steps is None:
             steps = self.steps
-
-        learn = cegal(self.M, max_iter = 30)
-
         theta = np.array([1., 1., -1., -1.])
         theta = theta/np.linalg.norm(theta, ord = 2)
         self.M.rewards = np.dot(self.M.features, theta) 
         self.demo(self.M.rewards, steps = steps)
+        self.learn_from_demo_file()
+
+    def learn_from_demo_file(self):
         demo_mu = learn.read_demo_file('./data/demo_gridworld')
 
         #mus, _ = self.M.optimal_policy(theta)
@@ -236,8 +277,12 @@ class gridworld(grids, object):
     
         #Learn from \approx[0.1, 0.1, -0.7, -0.7]
         #demo_mu = np.array([31.48191543,  85.06620586,   1.74326134,   1.18968865])
+        self.AL(demo_mu)
     
-        opt = super(cegal, learn).iteration(demo_mu)
+    def AL(self, exp_mu):
+    
+        learn = cegal(self.M, max_iter = 30)
+        opt = super(cegal, learn).iteration(exp_mu)
         prob = learn.model_check(opt['policy'], steps = 64)
         
         print("\n>>>>>>>>Apprenticeship Learning learnt policy weight vector:")
@@ -247,6 +292,16 @@ class gridworld(grids, object):
         
         grids.M.rewards = np.dot(grids.M.features, opt['theta']) 
         grids.draw_grids(grids.M.rewards)
+
+    def synthesize_from_human_demo(self, safety, steps = 64):
+        if steps is None:
+            steps = self.steps
+        theta = np.array([1., 1., -1., -1.])
+        theta = theta/np.linalg.norm(theta, ord = 2)
+        self.M.rewards = np.dot(self.M.features, theta) 
+        self.demo(self.M.rewards, steps = steps)
+        synthesize_from_demo_file(safety, steps)
+        
     
     def synthesize_from_demo_file(self, safety, steps = 64, path = './data/demo_gridworld'):
         if safety is None:
@@ -274,7 +329,7 @@ class gridworld(grids, object):
              
             grids.M.rewards = np.dot(grids.M.features, theta) 
             grids.draw_grids(grids.M.rewards)
-
+        return opt, opt_
 
     def synthesize(self, learn, exp_mu, opt = None, safety = None, steps = None):
 
@@ -306,9 +361,31 @@ class gridworld(grids, object):
         
 if __name__ == "__main__":
     grids = gridworld()    
-
-    grids.learn_from_human_demo(steps = 64)
-    grids.synthesize_from_demo_file(safety = 0.1)
+    grids.build_mdp()
 
 
- 
+    #grids.learn_from_human_demo(steps = 64)
+    #opt, opt_ = grids.synthesize_from_demo_file(safety = 0.1)
+    #theta = opt['theta'] 
+    
+    #theta = np.array([1., 1., -1., -1.])
+    #theta = np.array([0.59033466,  0.59567414, -0.39910104, -0.3706692 ])
+    theta = np.array([0.00812865,  0.00252285, -0.70708771, -0.70707463])
+    theta = theta/np.linalg.norm(theta, ord = 2)
+    mus, policy = grids.M.optimal_policy(theta)
+    exp_mu = mus[-2]
+    exp_mu_ = grids.policy_simulation(policy, 10000)
+
+
+    print("Analytical expected features:")
+    print(exp_mu)
+    print("Simulated expected features:")
+    print(exp_mu_)
+    print("Feature difference:")
+    print(np.linalg.norm(exp_mu - exp_mu_, ord = 2))
+    
+    grids.AL(exp_mu)
+    grids.AL(exp_mu_)
+
+
+

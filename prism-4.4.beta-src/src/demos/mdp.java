@@ -140,13 +140,21 @@ public class mdp {
 				c.setSynch("a" + Integer.toString(j));
 				c.setSynchIndex(j);
 				c.setGuard(new ExpressionLiteral(TypeBool.getInstance(),  "s=" + i));
+				double p_total = 0.0;
 				for (int k = 0; k < MDP[i][j].length; k++) {
+					if(k == i) continue;
 					double p = MDP[i][j][k];
 					if(p > 0.0) {
 						u.addElement(new ExpressionIdent("s"), new ExpressionLiteral(TypeInt.getInstance(), Integer.toString(k)));
 						us.addUpdate(new ExpressionLiteral(TypeDouble.getInstance(), Double.toString(p)), u);
 						u = new Update();
 					}
+					p_total += p;
+				}
+				if(p_total < 1.0) {
+					u.addElement(new ExpressionIdent("s"), new ExpressionLiteral(TypeInt.getInstance(), Integer.toString(i)));
+					us.addUpdate(new ExpressionLiteral(TypeDouble.getInstance(), Double.toString(1.0 - p_total)), u);
+					u = new Update();
 				}
 				c.setUpdates(us);
 				m.addCommand(c);
@@ -172,8 +180,8 @@ public class mdp {
 			mf.setModelType(ModelType.MDP);
 
 			ArrayList<String> files = new ArrayList<String>();
-			String STATE_SPACE =  dir + "/state_space";
-			String MDP = dir + "/mdp";
+			String STATE_SPACE =  dir + "data/state_space";
+			String MDP = dir + "data/mdp";
 
 			files.add(STATE_SPACE);
 			files.add(MDP);

@@ -260,7 +260,7 @@ class mdp():
         file.close()
 
 
-        self.unsafes = list()
+        self.starts = list()
         file = open('./data/start', 'r')
         lines = file.readlines()
         for line in lines:
@@ -284,7 +284,10 @@ class mdp():
             prob -= self.T[action][state, s]
             if prob <= 0:
                 return s
-        return self.state
+        return state
+
+                
+
 
     def expected_features_manual(self, discount = None, epsilon = None, max_iter = None):
         if discount is None:
@@ -314,7 +317,6 @@ class mdp():
             epsilon = self.epsilon
         if max_iter is None:
             max_iter = self.max_iter
-
 	mu = []
 	for f in range(self.features.shape[-1]):
 		V = self.features[:, f].reshape(len(self.S))
@@ -344,6 +346,7 @@ class mdp():
             diff = (abs((v_temp - v).max()) + abs((v_temp - v).min()))/2
 	print("Expected value calculated")
         return v
+
 			
 
     def expected_value(self, discount = None, epsilon = None, max_iter = None):
@@ -421,6 +424,10 @@ class mdp():
 
 
     def LP_features_cvxopt(self, epsilon = None, discount = None):
+        if epsilon is None:
+            epsilon = self.epsilon
+        if discount is None:
+            dicount = self.discount
     	self.P = self.P.todense()
 	assert self.P.shape == (len(self.S), len(self.S))
     	mu = []
