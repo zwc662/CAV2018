@@ -65,8 +65,7 @@ Please input an index to select the experiment environment.
 
 gridworld
 ---------
-Firstly input an integer by following the prompt to decide the dimension for the nxn gridworld. 
-The default value is 8. If press Enter without inputing any integer, the default value will be used.
+Firstly input an integer by following the prompt to decide the dimension for the nxn gridworld. If press Enter without inputing any integer, the default value 8 will be used.
 
 After deciding the dimension, a figure of gridworld with predetermined reward mapping will be generated. As described in the paper, there are 2 goal states with highest rewards and 2 darkest states with lowest rewards. Including the 2 darkest states, the areas surrounded by red lines are all unsafe states. When demonstrating the paths, please try to avoid crossing the red line. Press 0~4 in the terminal to select action in each time step: ``0. stay, 1. go right, 2. go down, 3. go up, 4. go left`` to go to the goal states. Because of stochasticity, there is probability that the agent doesn't go in the same direction as the action being chosen, except for ``0. stay``, which means staying in the current state and ending the episode. The maximum step length in one single episode is upbounded by n^2. User can demonstrate as many episodes as needed. Please follow the prompt to choose whether to start the next episode or end the demonstration phase. While human demonstrating, the generated paths are stored in a plain text. 
 
