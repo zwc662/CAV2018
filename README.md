@@ -54,10 +54,11 @@ The program start with a text-based interface. Please run ``main.py`` to start t
 
 There will be a list of experiment environment:
 
-.. code:: shell
+```
 1. gridworld, 
 2. cartpole,
 3. mountaincar
+```
 
 Please input an index to select the experiment environment.
 
