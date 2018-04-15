@@ -339,7 +339,7 @@ class mountaincar(grids, object):
 
         opt, opt_ = self.synthesize(learn = learn, exp_mu = exp_mu, safety = safety, steps = steps)
         while True:
-            n = raw_input('1. Try AL policy, 2. Try CEGAL policy, 3. Quit')
+            n = raw_input('\n1. Try AL policy, 2. Try CEGAL policy, 3. Quit\nInput your selection:\n')
             if n == '1':
                 policy = opt_['policy']
             elif n == '2':
@@ -350,7 +350,7 @@ class mountaincar(grids, object):
                 print("Invalid")
                 continue
             while True:
-                test = raw_input('1. Play learnt policy visually\n\
+                test = raw_input('\n1. Play learnt policy visually\n\
 2. Run policy to collect statistical data\n3. Store policy\n4. Quit\nInput the selection:\n')
                 if test == '1':
                     self.episode(policy = opt['policy'], steps = steps)
