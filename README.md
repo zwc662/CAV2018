@@ -101,7 +101,7 @@ The unsafe situation is defined as ``(position<-0.9 && velocity<-0.03)||(positio
 
 Firstly, please follow the prompt to run apprenticeship learning. Like the cartpole, in the end, model checking will be implemented on the policy to solve the following PCTL constraint.
 
-``P=? [true U<=200 ((position<-0.9 && velocity<-0.03)||(position>0.3 && velocity>0.03))]``
+``P=? [true U<=66 ((position<-0.9 && velocity<-0.03)||(position>0.3 && velocity>0.03))]``
 
 Then please select from ``1. Play the policy visually, 2. Run policy to get statistical data, 3. Quit``. If one chooses to play the policy visually, please press Enter in the terminal for 5 times until a window popping up. Please observe how the policy controls the car to reach the mountaintop on the right. If one chooses to get statistical data, the policy will be run for 2000 episodes. The statistical results include the average step length and the rate of performing an unsafe episode. Note that once an unsafe state is reached, the episode is regarded as unsafe. If ``Quit`` is chosen, then the program will continue to run Safety-Aware Apprenticeship Learning.
 
