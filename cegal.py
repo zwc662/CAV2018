@@ -172,6 +172,7 @@ class cegal(apirl, object):
             mus = self.M.expected_features_manual().copy()
             cex, prob = self.verify(policy, mus, safety, steps)
             opt['prob'] = prob
+            opt['diff'] = float('inf')
             if prob <= safety:
                 print("Provided policy is safe. Use as initial safe policy")
                 features['cands'].append(mu.copy())
@@ -188,15 +189,16 @@ class cegal(apirl, object):
             if opt is None:
                 print("Failed to find a safe policy")
                 return None
-        print("Initial safe policy is generated.")
-        theta = np.array(opt['theta'])
-        policy = opt['prob']
-        mu = opt['mu'].copy()
-        diff = np.linalg.norm(mu - exp_mu, ord = 2)
-        opt['diff'] = diff
+            else:
+                print("Initial safe policy is generated.")
+                theta = np.array(opt['theta'])
+                policy = opt['prob']
+                mu = opt['mu'].copy()
+                diff = np.linalg.norm(mu - exp_mu, ord = 2)
+                opt['diff'] = diff
 
-        features['cands'].append(mu.copy())
-        features['safes'].append(mu.copy())
+                features['cands'].append(mu.copy())
+                features['safes'].append(mu.copy())
 
         
 	INF = 0.0
@@ -223,6 +225,7 @@ class cegal(apirl, object):
 
         err = 0
         itr = 0
+        diff = opt['diff']
         diff_ = float('inf')
         QP_err = 0
         
@@ -241,7 +244,7 @@ class cegal(apirl, object):
             print("\n>>>>>>>>>Lastly learnt policy weight vector:")
             print(theta)
             
-           
+            ''' 
             if INF == K and abs(diff - diff_) < self.M.epsilon:
                 #print("Stuck in local optimum. End iteration")
                 #K = (K + INF)/2.0
@@ -250,6 +253,7 @@ class cegal(apirl, object):
                     print("Stuck in local optimum of AL. Return best learnt policy.")
                     return opt, opt_
             diff_ = diff
+            '''
 
             itr += 1
             

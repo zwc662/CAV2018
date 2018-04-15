@@ -1,0 +1,20 @@
+
+
+
+Learning result for safety specification:
+
+P<=0.7[true U<=64 'unsafe']
+
+>>>>>>>>Apprenticeship Learning learnt policy weight vector:z:}Jbæ?
+Š(5¯iæ?šŒÃ_ÂÀ¿6tƒ‰ö¬¿
+PRISM model checking result: 0.849819
+
+>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy weight vector:ÓT¨»‹@â?³ÆÝ5â?¼™	ùÚ¿­’…¢Ú¿
+PRISM model checking result: 0.377522
+Experiment: gridworld
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure.
+Given safety spec:
+P=? [U<= 200 ((position < -0.3 && angle < -20)||(position > 0.3 && angle > 20))]
+
+PRISM model checking the probability of reaching the unsafe states: 0.400350

@@ -147,7 +147,7 @@ class cartpole(grids, object):
         print("\nPRISM model checking the probability of reaching unsafe states: %f\n" % prob)
 
 
-        file = open('log', 'a')
+        file = open('./data/log', 'a')
         file.write("\n>>>>>>>>Apprenticeship Learning learns a policy \
  which is an optimal policy of reward function as in the figure.")
         file.write("\nGiven safety spec:\nP=? [U<= 200 ((position < -0.3 && angle < -20)||(position > 0.3 && angle > 20))]\n")
@@ -315,7 +315,7 @@ class cartpole(grids, object):
         print('Unsafe ratio: %f' % dead)
         print("Average step length: %f" % avg)
         
-        file.open('log', 'a')
+        file = open('./data/log', 'a')
         file.write('Unsafe ratio: %f' % dead)
         file.write("Average step length: %f" % avg)
         file.close()
@@ -389,17 +389,15 @@ Input the seletion:\n')
         print("\nFeature vector margin: %f" % opt['diff'])
         print("\nPRISM model checking result: %f\n" % opt['prob'])
         
-        file = open('log', 'w')
+        file = open('./data/log', 'w')
         file.write("\n\n\nLearning result for safety specification:\n")
         file.write("\nP<=" + str(safety) + " [U<= 200 ((position < -0.3 && angle < -20)||(position > 0.3 && angle > 20))]\n")
 
-        file.write("\n>>>>>>>>Apprenticeship Learning learnt policy weight vector:")
-        file.write(opt_['theta'])
+        file.write("\n>>>>>>>>Apprenticeship Learning learnt policy")
         #print("\nFeature vector margin: %f" % opt_['diff'])
         file.write("\nPRISM model checking result: %f\n" % opt_['prob'])
 
-        file.write("\n>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy weight vector:")
-        file.write(opt['theta'])
+        file.write("\n>>>>>>>>Safety-Aware Apprenticeship Learning")
         #print("\nFeature vector margin: %f" % opt['diff'])
         file.write("\nPRISM model checking result: %f\n" % opt['prob'])
         file.close()

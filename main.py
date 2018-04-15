@@ -71,14 +71,17 @@ if __name__ == "__main__":
     3. mountaincar\n\
 Please input the index:\n')
     index = int(index)
-    file = open('log', 'a')
+    file = open('./data/log', 'a')
     if index == 1:
         file.write('Experiment: gridworld\n')
+        file.close()
         play_gridworld()
     elif index == 2:
         file.write('Experiment: cartpole\n')
+        file.close()
         play_cartpole()
     elif index == 3:
         file.write('Experiment: mountaincar\n')
+        file.close()
         play_mountaincar()
 
