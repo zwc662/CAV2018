@@ -150,7 +150,7 @@ class cartpole(grids, object):
         file = open('log', 'a')
         file.write("\n>>>>>>>>Apprenticeship Learning learns a policy \
  which is an optimal policy of reward function as in the figure.")
-        file.write("\nGiven safety spec:\nP=? [U<= " + str(self.dim**2) + " 'unsafe']\n")
+        file.write("\nGiven safety spec:\nP=? [U<= 200 ((position < -0.3 && angle < -20)||(position > 0.3 && angle > 20))]\n")
         file.write("\nPRISM model checking the probability of reaching\
  the unsafe states: %f\n" % prob)
         file.close()
@@ -391,7 +391,7 @@ Input the seletion:\n')
         
         file = open('log', 'w')
         file.write("\n\n\nLearning result for safety specification:\n")
-        file.write("\nP<=" + str(safety) + "[true U<=" + str(steps) + " 'unsafe']\n") 
+        file.write("\nP<=" + str(safety) + " [U<= 200 ((position < -0.3 && angle < -20)||(position > 0.3 && angle > 20))]\n")
 
         file.write("\n>>>>>>>>Apprenticeship Learning learnt policy weight vector:")
         file.write(opt_['theta'])
