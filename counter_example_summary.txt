@@ -4,8 +4,8 @@
 Task: Counterexample for P(t)<0.00195312
 Model Checking result of original system: 0.990048
 Closure probability: 0.00195313
-Time for model checking: 0.004522 secs
-Time of counter example computation: 1.66332 secs [Without Pre-/Post processing]
+Time for model checking: 0.005295 secs
+Time of counter example computation: 1.71705 secs [Without Pre-/Post processing]
 Search params: CONCRETE, GLOBAL, PATH-based
 Base node selection for concretization: Select All Visible
 Additional selection criterion: None

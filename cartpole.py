@@ -24,7 +24,6 @@ from grids import grids
 # the following library: https://github.com/Svalorzen/AI-Toolbox
 # Building it will create an MDP.so file which you can then
 # include here.
-import MDP
 
 env = gym.make('CartPole-v0')
 
