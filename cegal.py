@@ -119,7 +119,7 @@ class cegal(apirl, object):
     
         while True:
             cex, prob = self.verify(policy, mus, safety, steps)
-            if prob < safety:
+            if prob <= safety:
                 opt = {'diff': float('inf'), 
                         'theta': theta, 
                         'policy': policy, 
@@ -172,7 +172,7 @@ class cegal(apirl, object):
             mus = self.M.expected_features_manual().copy()
             cex, prob = self.verify(policy, mus, safety, steps)
             opt['prob'] = prob
-            if prob < safety:
+            if prob <= safety:
                 print("Provided policy is safe. Use as initial safe policy")
                 features['cands'].append(mu.copy())
                 features['safes'].append(mu.copy())

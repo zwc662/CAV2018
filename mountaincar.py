@@ -20,16 +20,10 @@ import cProfile
 import math
 from grids import grids
 
-# In order to run this script you must download and compile
-# the following library: https://github.com/Svalorzen/AI-Toolbox
-# Building it will create an MDP.so file which you can then
-# include here.
-import MDP
-
 env = gym.make('MountainCar-v0')
 
 class mountaincar(grids, object):
-    def __init__(self, steps = 200, combo = 0, safety = 0.5):
+    def __init__(self, steps = 200, combo = 2, safety = 0.5):
         if sys.version_info[0] >= 3:  
             super().__init__()
         else:
@@ -60,8 +54,6 @@ class mountaincar(grids, object):
         self.combo = combo
 
         self.steps = int(self.steps/(self.combo + 1)) + 1
-        #if self.steps * (self.combo + 1) < 67:
-        #self.steps = self.steps + 1
 
         self.opt = {}
 
@@ -97,72 +89,6 @@ class mountaincar(grids, object):
                 if p_tot < 1.0:
                     self.M.T[a][s, s] = 1.0 - p_tot
 
-    def build_MDP_from_file_old(self):
-        self.build_features()
-        self.read_MDP_file_old()
-        
-        self.set_unsafe()
-        self.check_transitions()
-
-        self.M.set_initial_transitions()
-
-
-        self.M.output()
-        os.system('cp ./data/state_space ./data/state_space_mountaincar')
-        os.system('cp ./data/unsafe ./data/unsafe_mountaincar')
-        os.system('cp ./data/mdp ./data/mdp_mountaincar')
-        os.system('cp ./data/start ./data/start_mountaincar')
-
-        self.set_initial_opt()
-
-    def read_MDP_file_old(self):
-        file = open('./data/MDP_mountaincar', 'r')
-        lines = file.readlines()
-        if lines[0] == 'starts' or lines[0] == 'starts\n':
-            index = 1
-        else:
-            exit()
-        self.M.starts = list()
-        for index in range(1, len(lines)):
-            if lines[index] != 'features' and lines[index] != 'features\n':
-                line = re.split(':|\n|''', lines[index])
-                j = int(line[1])
-                i = int(line[0])
-                coord = [j, i%4, (i/4)%4, ((i/4)/4)]
-                s = self.coord_to_state(coord)
-                self.M.starts.append(s)
-            else:
-                break
-        index += 1  
-
-        demo_mu = []
-        line = lines[index].split(':')
-        for feature in line:
-            try:
-                demo_mu.append(float(feature))
-            except:         
-                continue
-        demo_mu = np.array(demo_mu)
-        index += 2
-
-        self.M.T = list()
-        for a in self.M.A:
-            self.M.T.append(np.zeros([len(self.M.S), len(self.M.S)]))
-            self.M.T[a][-1, -1] = 1.0
-        for i in range(index, len(lines)):
-            line = re.split(':|\n|''', lines[i])
-            j = int(line[1])
-            i = int(line[0])
-            coord = [j, i%4, (i/4)%4, ((i/4)/4)]
-            s = self.coord_to_state(coord)
-            
-            j = int(line[4])
-            i = int(line[3])
-            coord = [j, i%4, (i/4)%4, ((i/4)/4)]
-            s_ = self.coord_to_state(coord)
-
-            self.M.T[int(line[2])][s, s_] = float(line[5])
-        file.close()
 
     def build_features(self):
         f = 18
@@ -210,26 +136,6 @@ class mountaincar(grids, object):
         self.set_initial_opt()
 
 
-    def learn_from_feature_file(self):
-        learn = apirl(self.M, max_iter = 30)
-
-        file = open('./data/demo_mountaincar', 'r')
-        line = file.readlines()[-1]
-        print(len(line.split('\n')[0].split(' ')))
-
-        learn.exp_mu = list()
-        try:
-            for f in line.split('\n')[0].split(' '):
-                learn.exp_mu.append(float(f))
-        except:
-            pass
-        learn.exp_mu = np.array(learn.exp_mu)
-        
-        print(learn.exp_mu)
-        opt = learn.iteration(learn.exp_mu) 
-        return opt
-
-
     def learn_from_demo_file(self, steps = None):
         if steps is None:
             steps = self.steps
@@ -242,47 +148,26 @@ class mountaincar(grids, object):
         print("\n>>>>>>>>Apprenticeship Learning learnt policy weight vector:")
         print(opt['theta'])
         print("\nFeature vector margin: %f" % opt['diff'])
-        print("\nPRISM model checking result: %f\n" % prob)
+        print("\nGiven safety spec:\nP=? [U<= 200 ((position < -0.9 && velocity < -0.03)||(position > 0.3 && velocity > 0.03))]\n")
+        print("\nPRISM model checking the probability of reaching unsafe states: %f\n" % prob)
 
 
         while True:
-            test = raw_input('1. Run AL policy visually\n\
-2. Run AL policy to collect statistical data\n3. Quit\n')
+            test = raw_input('1. Play learnt policy visually\n\
+2. Run AL policy to collect statistical data\n3. Store policy \n4. Quit\nInput the selection:\n')
             if test == '1':
                 self.episode(policy = opt['policy'], steps = steps)
             elif test == '2':
                 self.test(policy = opt['policy'])
             elif test == '3':
+                self.write_policy_file(policy = opt['policy'], path = './data/policy_mountaincar')
+            elif test == '4':
                 break
             else:
                 print("Invalid input")
         return opt
 
 
-
-    def copy_from_policy_file(self):
-        self.M.policy = np.zeros([len(self.M.S), len(self.M.A)])
-        file = open('./data/demo_policy_mountaincar', 'r')
-        lines = file.readlines()
-    	for i in range(len(lines)):
-    	    line = re.split(':|\n|''', lines[i])
-    	    for j in range(len(line)):
-    	        if line[j] != '':
-                    coord = [j, i%4, (i/4)%4, ((i/4)/4)]
-                    s = self.coord_to_state(coord)
-    		    a = int(float(line[j]))
-                    self.M.policy[s, a] = 1.0
-        file.close()
-
-        for s in self.M.S:
-            p_tot = self.M.policy[s].sum()
-            a_max = self.M.policy[s].argmax()
-            if p_tot < 1.0:
-                self.M.policy[s, a_max] += 1.0 - p_tot
-                 
-        self.M.set_initial_transitions()
-        self.M.set_policy()
-    
     def write_policy_file(self, policy = None, path = './data/policy_mountaincar'):
         if policy is None:
             policy = self.M.policy
@@ -317,14 +202,6 @@ class mountaincar(grids, object):
         opt = learn.iteration(learn.exp_mu) 
         return opt
 
-    def learn_from_policy_file_old(self):
-        learn = apirl(self.M, max_iter = 50)
-        self.copy_from_policy_file()
-        mus = self.M.expected_features_manual()
-        learn.exp_mu = mus[-2]
-        print(learn.exp_mu)
-        opt = learn.iteration(learn.exp_mu) 
-        return opt
 
     def episode(self, demo = False, safe = False, performance = False, policy = None, steps = None):
         if steps is None:
@@ -333,9 +210,6 @@ class mountaincar(grids, object):
         if policy is None:
             policy = self.M.policy
     
-        #steps = 67
-        #self.combo = 0
-
         unsafes = np.zeros([len(self.M.S)]).astype(bool)
         for s in self.M.unsafes:
             unsafes[s] = True
@@ -364,6 +238,8 @@ class mountaincar(grids, object):
             for i in range(self.combo):
       	        o_, rew, done, info = env.step(a);
      	        s_ = self.observation_to_index(o_);
+                if not (demo or performance or safe):
+    	            env.render()
 
 	        if done:
                     path.append([t, s, a, s_])
@@ -462,8 +338,6 @@ class mountaincar(grids, object):
         exp_mu = learn.read_demo_file(path)
 
         opt, opt_ = self.synthesize(learn = learn, exp_mu = exp_mu, safety = safety, steps = steps)
-        
-        
         while True:
             n = raw_input('1. Try AL policy, 2. Try CEGAL policy, 3. Quit')
             if n == '1':
@@ -475,16 +349,24 @@ class mountaincar(grids, object):
             else:
                 print("Invalid")
                 continue
-             
-            self.test(policy = policy)
-            
-            w = raw_input('Write policy file?[w]')
-            if w == 'w' or w == 'W':
-                if n == '1':
-                    self.write_policy_file(policy = policy, path = './data/policy_mountaincar')
+            while True:
+                test = raw_input('1. Play learnt policy visually\n\
+2. Run policy to collect statistical data\n3. Store policy\n4. Quit\nInput the selection:\n')
+                if test == '1':
+                    self.episode(policy = opt['policy'], steps = steps)
+                elif test == '2':
+                    self.test(policy = opt['policy'])
+                elif test == '3':
+                    if n == '1':
+                        self.write_policy_file(policy = policy, path = './data/policy_mountaincar')
+                    else:
+                        self.write_policy_file(policy = policy, path = './data/policy_mountaincar_' + str(safety))
+                elif test == '4':
+                    break
                 else:
-                    self.write_policy_file(policy = policy, path = './data/policy_mountaincar_' + str(safety))
-            
+                    print("Invalid input")
+             
+        return opt, opt_ 
 
     def synthesize(self, learn, exp_mu, opt = None, safety = None, steps = None):
         if opt is None:
@@ -499,7 +381,7 @@ class mountaincar(grids, object):
         ## opt = (diff, theta, policy, mu)
 
         print("\n\n\nLearning result for safety specification:\n")
-        print("\nP<=" + str(safety) + "[true U<=" + str(steps) + " 'unsafe']\n") 
+        print("\nP<=" + str(safety) + " [U<= 66 ((position < -0.9 && velocity < -0.03 )||(position > 0.3 && velocity > 0.03))]\n")
 
         print("\n>>>>>>>>Apprenticeship Learning learnt policy weight vector:")
         print(opt_['theta'])
@@ -513,184 +395,6 @@ class mountaincar(grids, object):
         
         return opt, opt_
 
-    def run_tool_box(self):
-
-        paths = []
-
-        self.M.starts = list()
-
-        unsafes = np.zeros([len(self.M.S)]).astype(bool)
-        for u in self.M.unsafes:
-            unsafes[u] = True
-
-        starts = np.zeros([len(self.M.S)]).astype(bool)
-        for u in self.M.starts:
-            starts[u] = True
-        
-        self.M.T = list()
-        for a in self.M.A:
-            self.M.T.append(np.zeros([len(self.M.S), len(self.M.S)]))
-        
-        gamma = self.M.discount
-        exp = MDP.SparseExperience(len(self.M.S), len(self.M.A));
-        model = MDP.SparseRLModel(exp, gamma);
-        solver = MDP.PrioritizedSweepingSparseRLModel(model, 0.1, 500);
-        policy = MDP.QGreedyPolicy(solver.getQFunction());
-
-        using = 0
-	episodes=0
-	win = 0
-	streak = list()
-	
-        maxepisodes = 10000
-	for i_episode in xrange(maxepisodes):
-                path = []
-    		o = env.reset()
-
-                s_i = self.observation_to_index(o)
-
-		dead = False
-                rec = self.steps
-                done = False
-
-    		for t in xrange(self.steps):
-        	    # Convert the observation into our own space
-        	    s = self.observation_to_index(o);
-        	    # Select the best action according to the policy
-        	    a = policy.sampleAction(s)
-        	    # Combo act
-                    for i in range(self.combo): 
-        	        o_, rew, done, info = env.step(a);
-        	        # See where we arrived
-        	        s_ = self.observation_to_index(o_);
-                        #path.append([(self.combo + 1) * t + i, s, a, s_])
-                        #self.M.T[a][s, s_] += 1.0
-
-                        if unsafes[s_]:
-		            dead = True
-
-                        if done:
-                            break
-
-        	    o_, rew, done, info = env.step(a);
-        	    # See where we arrived
-        	    s_ = self.observation_to_index(o_);
-
-                    self.M.T[a][s, s_] += 1.0
-                    #path.append([(self.combo + 1) * t + self.combo, s, a, s_])
-                    path.append([t, s, a, s_])
-
-                    if unsafes[s_]:
-		        dead = True
-                        
-        	    if done:
-                        break
-                    # Record information, and then run PrioritizedSweeping
-        	    exp.record(s, a, s_, rew);
-       		    model.sync(s, a, s_);
-		    solver.stepUpdateQ(s, a);
-		    solver.batchUpdateQ();
-
-		    o = o_;
-
-   		#   if render or i_episode == maxepisodes - 1:
-      		#    env.render()
-
-    		  
-                # Here we have to set the reward since otherwise rewards are
-                # always 1.0, so there would be no way for the agent to distinguish
-                # between bad actions and good actions.
-                if t >= self.steps - 1:
-                    rew = -100
-                    tag ='xxx'
-		    streak.append(0)
-                else:
-		    rew = self.steps - t
-       		    tag = '###';
-        	    streak.append(1)
-      		    win += 1;
-
-  		    if not dead:
-                        using += 1
-                        paths.append(path)
-                        if not starts[s_i]:
-                            self.M.starts.append(s_i)
-                            starts[s_i] = True
-
-  		if len(streak) > 100:
-      			streak.pop(0)
-
-
-    		episodes +=1;
-    		exp.record(s, a, s_, rew);
-    		model.sync(s, a, s_);
-    		solver.stepUpdateQ(s, a);
-    		solver.batchUpdateQ();
-                # If the learning process gets stuck in some local optima without
-                # winning we just reset the learning. We don't want to try to change
-                # what the agent has learned because this task is very easy to fail
-                # when trying to learn something new (simple exploration will probably
-                # just make the pole topple over). We just want to learn the correct
-                # thing once and be done with it.
-		if episodes == 100:
-    		    if sum(streak) < 30:
-	                exp = MDP.SparseExperience(len(self.M.S), len(self.M.A));
-       			model = MDP.SparseRLModel(exp, gamma);
-        		solver = MDP.PrioritizedSweepingSparseRLModel(model, 0.1, 500);
-      	  		policy = MDP.QGreedyPolicy(solver.getQFunction());
-		    if sum(streak) < 80:
-                        #paths = list()
-			#using = 0
-                        #self.M.starts = list()
-                        pass
-		    episodes = 0
-		if using > 1000 and i_episode > maxepisodes/2:
-		    break
-
-	    	print "Episode {} finished after {} timecoords {} win:{} use:{}".format(i_episode, len(path), tag, win, using)
-
-	
-        file = open('./data/start_mountaincar', 'w')
-	for start in self.M.starts:
-		file.write(str(start) + '\n')
-        file.close()
-
-    
-        for a in range(len(self.M.A)):
-            for s in range(len(self.M.S)):
-                tot = np.sum(self.M.T[a][s])
-                if tot == 0.0:
-                    self.M.T[a][s, s] = 0.0
-            self.M.T[a] = sparse.bsr_matrix(self.M.T[a])        
-            self.M.T[a] = sparse.diags(1.0/self.M.T[a].sum(axis = 1).A.ravel()).dot(self.M.T[a]).todense()
-
-	file = open('./data/mdp_mountaincar', 'w')
-        for s in self.M.S:
-            for a in self.M.A:
-                for s_ in self.M.S:
-                    file.write(str(s) + ' ' 
-                                + str(a) + ' ' 
-                                + str(s_) + ' ' 
-                                + str(self.M.T[a][s, s_]) + '\n')
-        file.close()
-
-        file = open('./data/unsafe_mountaincar', 'w')
-        for s in self.M.unsafes:
-            file.write(str(s) + '\n')
-        file.close()
-
-        file = open('./data/state_space_mountaincar', 'w')
-        file.write('states\n' + str(len(self.M.S)) + '\nactions\n' + str(len(self.M.A)))
-        file.close()
-
-        file = open('./data/demo_mountaincar', 'w')
-        for path in paths:
-            for t in range(len(path)):
-                file.write(str(path[t][0]) + ' ' 
-                            + str(path[t][1]) + ' ' 
-                            + str(path[t][2]) + ' '
-                            + str(path[t][3]) + '\n')
-        file.close()
 
     def model_check(self, policy, safety = None, steps = None):
         if steps is None:
@@ -711,66 +415,10 @@ if __name__ == "__main__":
 
     mountaincar = mountaincar(safety = safety, combo = combo, steps = steps)
 
-    #mountaincar.run_tool_box()
     
     mountaincar.build_MDP_from_file()
 
     #mountaincar.learn_from_demo_file()
 
     mountaincar.synthesize_from_demo_file(safety)
-
-    
-    
-    steps = 200/(combo + 1)
-    policy = mountaincar.read_policy_file('./data/policy_mountaincar')
-    prob = mountaincar.model_check(policy, steps)
-    real = raw_input("Play AL policy. Ready? [Y/N]")
-    while real == 'y' or real == 'Y':
-        mountaincar.test(policy = policy)
-        real = raw_input("Play AL policy again? [Y/N]")
-    
-    
-    policy = mountaincar.read_policy_file('./data/policy_mountaincar_' + str(safety))
-    prob = mountaincar.model_check(policy, steps)
-    real = raw_input("Play SAAL policy. Ready? [Y/N]")
-    while real == 'y' or real == 'Y':
-        mountaincar.test(policy = policy)
-        real = raw_input("Play SAAL policy again? [Y/N]")
-    
-    safety = 0.35
-    policy = mountaincar.read_policy_file('./data/policy_mountaincar_' + str(safety))
-    prob = mountaincar.model_check(policy, steps)
-    real = raw_input("Play SAAL policy. Ready? [Y/N]")
-    while real == 'y' or real == 'Y':
-        mountaincar.test(policy = policy)
-        #mountaincar.demo(policy = policy)
-        real = raw_input("Play SAAL policy again? [Y/N]")
-
-    safety = 0.3
-    policy = mountaincar.read_policy_file('./data/policy_mountaincar_' + str(safety))
-    prob = mountaincar.model_check(policy, steps)
-    real = raw_input("Play SAAL policy. Ready? [Y/N]")
-    while real == 'y' or real == 'Y':
-        #mountaincar.episode(policy = policy, steps = steps)
-        mountaincar.test(policy = policy)
-        real = raw_input("Play SAAL policy again? [Y/N]")
-
-
-    safety = 0.2
-    policy = mountaincar.read_policy_file('./data/policy_mountaincar_' + str(safety))
-    prob = mountaincar.model_check(policy, steps)
-    real = raw_input("Play SAAL policy. Ready? [Y/N]")
-    while real == 'y' or real == 'Y':
-        #mountaincar.episode(policy = policy, steps = steps)
-        mountaincar.test(policy = policy)
-        real = raw_input("Play SAAL policy again? [Y/N]")
-
-    safety = 0.1
-    policy = mountaincar.read_policy_file('./data/policy_mountaincar_' + str(safety))
-    prob = mountaincar.model_check(policy, steps)
-    real = raw_input("Play SAAL policy. Ready? [Y/N]")
-    while real == 'y' or real == 'Y':
-        mountaincar.test(policy = policy)
-        #mountaincar.episode(policy = policy, steps = steps)
-        real = raw_input("Play SAAL policy again? [Y/N]")
 

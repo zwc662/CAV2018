@@ -63,23 +63,6 @@ class cartpole(grids, object):
 
     def set_initial_opt(self):
         self.opt = {}
-        self.opt['policy'] = np.zeros([len(self.M.S), len(self.M.A)])
-        '''
-        for s in self.M.S:
-            coord = self.index_to_coord(s)
-            if coord[0] < (self.grids[0] - 2)/2:
-                self.opt['policy'][s, 1] = 1.0
-            else:
-                self.opt['policy'][s, 0] = 1.0
-            if coord[0] <= (self.grids[0] - 2)/2 and coord[1] <= (self.grids[1] - 2)/2:
-                self.opt['policy'][s, 1] = 1.0
-            elif coord[0] => (self.grids[0] - 2)/2 and coord[1] => (self.grids[1] - 2)/2:
-                self.opt['policy'][s, 0] = 1.0
-            elif coord[1] => (self.grids[1] - 2)/2:
-                self.opt['policy'][s, 1] = 1.0
-            elif coord[1] <= (self.grids[1] - 2)/2:
-                self.opt['policy'][s, 0] = 1.0
-            '''
         
         self.opt['policy'] = self.read_policy_file(path = './data/init_cartpole')
         self.M.set_policy(self.opt['policy'])
@@ -93,11 +76,7 @@ class cartpole(grids, object):
             coords = self.index_to_coord(s) 
 	    if (coords[0] <= 0 and coords[2] <=  1)  or ((coords[0]) >= (self.grids[0] - 1) and (coords[2] >= self.grids[2] - 2)):
 
-	    #if coords[0] <= 1 or coords[0] >= self.grids[0] - 2:
-                #(-\infty, -1.0] or [1.0, \infty)
 	        self.M.unsafes.append(s)
-        #self.M.unsafes.append(self.M.S[-1])
-        #self.M.set_unsafes_transitions()
 
     def check_transitions(self):
         for a in self.M.A:
@@ -110,73 +89,7 @@ class cartpole(grids, object):
                 if p_tot > 1.0:
                     self.M.T[a][s] = self.M.T[a][s] * 1.0/p_tot
 
-    def build_MDP_from_file_old(self):
-        self.build_features()
 
-        self.read_MDP_file_old()
-        
-        self.set_unsafe()
-        self.check_transitions()
-
-        self.M.set_initial_transitions()
-
-        self.M.output()
-
-        self.M.set_initial_opt()
-
-        os.system('cp ./data/state_space ./data/state_space_cartpole')
-        os.system('cp ./data/unsafe ./data/unsafe_cartpole')
-        os.system('cp ./data/mdp ./data/mdp_cartpole')
-        os.system('cp ./data/start ./data/start_cartpole')
-
-    def read_MDP_file_old(self):
-        file = open('./data/MDP_cartpole', 'r')
-        lines = file.readlines()
-        if lines[0] == 'starts' or lines[0] == 'starts\n':
-            index = 1
-        else:
-            exit()
-        self.M.starts = list()
-        for index in range(1, len(lines)):
-            if lines[index] != 'features' and lines[index] != 'features\n':
-                line = re.split(':|\n|''', lines[index])
-                j = int(line[1])
-                i = int(line[0])
-                coord = [j, i%4, (i/4)%4, ((i/4)/4)]
-                s = self.coord_to_state(coord)
-                self.M.starts.append(s)
-            else:
-                break
-        index += 1  
-
-        demo_mu = []
-        line = lines[index].split(':')
-        for feature in line:
-            try:
-                demo_mu.append(float(feature))
-            except:         
-                continue
-        demo_mu = np.array(demo_mu)
-        index += 2
-
-        self.M.T = list()
-        for a in self.M.A:
-            self.M.T.append(np.zeros([len(self.M.S), len(self.M.S)]))
-            self.M.T[a][-1, -1] = 1.0
-        for i in range(index, len(lines)):
-            line = re.split(':|\n|''', lines[i])
-            j = int(line[1])
-            i = int(line[0])
-            coord = [j, i%4, (i/4)%4, ((i/4)/4)]
-            s = self.coord_to_state(coord)
-            
-            j = int(line[4])
-            i = int(line[3])
-            coord = [j, i%4, (i/4)%4, ((i/4)/4)]
-            s_ = self.coord_to_state(coord)
-
-            self.M.T[int(line[2])][s, s_] = float(line[5])
-        file.close()
 
     def build_features(self):
         f = 30
@@ -188,12 +101,6 @@ class cartpole(grids, object):
        
         for s in self.M.S: 
             coord = self.index_to_coord(s)
-            '''
-            self.M.features[s, 0] = math.exp(-1.0 *  coord[0])
-            self.M.features[s, 1] = math.exp(-1.0 *  coord[1])
-            self.M.features[s, 2] = math.exp(-1.0 *  coord[2])
-            self.M.features[s, 3] = math.exp(-1.0 *  coord[3])
-            '''
             y = coord[1] + coord[2] * self.grids[1] + coord[3] * self.grids[2] * self.grids[1]
             x = coord[0]
             for i in range(f):
@@ -201,12 +108,8 @@ class cartpole(grids, object):
                 coord_ = self.index_to_coord(s_)
                 y_ = coord_[1] + coord_[2] * self.grids[1] + coord_[3] * self.grids[2] * self.grids[1]
                 x_ = coord_[0]
-                #y_ = feature_states[i]/self.grids[0]
-                #x_ = feature_states[i]%self.grids[0]
                 self.M.features[s, i] = math.exp(-0.25 * math.sqrt((1.0 * y - y_)**2 + (1.0 * x - x_)**2))
         
-        #self.M.features[-2] = self.M.features[-2] * 0.0
-        #self.M.features[-1] = self.M.features[-1] * 0.0
 
 
     def build_MDP_from_file(self):
@@ -229,24 +132,6 @@ class cartpole(grids, object):
 
         self.M.output()
 
-    def learn_from_feature_file(self):
-        learn = apirl(self.M, max_iter = 30)
-
-        file = open('./data/demo_cartpole', 'r')
-        line = file.readlines()[-1]
-        print(len(line.split('\n')[0].split(' ')))
-
-        learn.exp_mu = list()
-        try:
-            for f in line.split('\n')[0].split(' '):
-                learn.exp_mu.append(float(f))
-        except:
-            pass
-        learn.exp_mu = np.array(learn.exp_mu)
-        
-        print(learn.exp_mu)
-        opt = learn.iteration(learn.exp_mu) 
-        return opt
 
     def learn_from_demo_file(self, steps = 200):
         learn = cegal(self.M, max_iter = 30)
@@ -259,12 +144,13 @@ class cartpole(grids, object):
         print("\n>>>>>>>>Apprenticeship Learning learnt policy weight vector:")
         print(opt['theta'])
         print("\nFeature vector margin: %f" % opt['diff'])
-        print("\nPRISM model checking result: %f\n" % prob)
+        print("\nGiven safety spec:\nP=? [U<= 200 ((position < -0.3 && angle < -20)||(position > 0.3 && angle > 20))]\n")
+        print("\nPRISM model checking the probability of reaching unsafe states: %f\n" % prob)
 
 
         while True:
-            test = raw_input('1. Run policy visually\n\
-2. Run policy to collect statistical data\n3. Store policy\n4. Quit\n')
+            test = raw_input('\n1. Play learnt policy visually\n\
+2. Run policy to collect statistical data\n3. Store policy\n4. Quit\nInput the selection:\n')
             if test == '1':
                 self.episode(policy = opt['policy'], steps = steps)
             elif test == '2':
@@ -277,28 +163,6 @@ class cartpole(grids, object):
                 print("Invalid input")
         return opt
 
-    def copy_from_policy_file(self):
-        self.M.policy = np.zeros([len(self.M.S), len(self.M.A)])
-        file = open('./data/demo_policy_cartpole', 'r')
-        lines = file.readlines()
-    	for i in range(len(lines)):
-    	    line = re.split(':|\n|''', lines[i])
-    	    for j in range(len(line)):
-    	        if line[j] != '':
-                    coord = [j, i%4, (i/4)%4, ((i/4)/4)]
-                    s = self.coord_to_state(coord)
-    		    a = int(float(line[j]))
-                    self.M.policy[s, a] = 1.0
-        file.close()
-
-        for s in self.M.S:
-            p_tot = self.M.policy[s].sum()
-            a_max = self.M.policy[s].argmax()
-            if p_tot < 1.0:
-                self.M.policy[s, a_max] += 1.0 - p_tot
-                 
-        self.M.set_initial_transitions()
-        self.M.set_policy()
     
     def write_policy_file(self, policy = None, path = './data/policy_cartpole'):
         if policy is None:
@@ -328,15 +192,6 @@ class cartpole(grids, object):
     def learn_from_policy_file(self):
         learn = apirl(self.M, max_iter = 50)
         self.read_policy_file()
-        mus = self.M.expected_features_manual()
-        learn.exp_mu = mus[-2]
-        print(learn.exp_mu)
-        opt = learn.iteration(learn.exp_mu) 
-        return opt
-
-    def learn_from_policy_file_old(self):
-        learn = apirl(self.M, max_iter = 50)
-        self.copy_from_policy_file()
         mus = self.M.expected_features_manual()
         learn.exp_mu = mus[-2]
         print(learn.exp_mu)
@@ -466,7 +321,8 @@ class cartpole(grids, object):
         
         
         while True:
-            n = raw_input('1. Try AL policy, 2. Try CEGAL policy, 3. Quit\n')
+            n = raw_input('\n1. Test AL policy, \n2. Test Safety-Aware AL policy, \n3. Quit\n\
+Input the seletion:\n')
             if n == '1':
                 policy = opt_['policy']
             elif n == '2':
@@ -476,15 +332,24 @@ class cartpole(grids, object):
             else:
                 print("Invalid")
                 continue
-             
-            self.test(policy = policy)
-            
-            y = raw_input('Write policy file?[y/n]')
-            if y == 'y' or y == 'Y':
-                if n == '1':
-                    self.write_policy_file(policy = policy, path = './data/policy_cartpole')
+            while True: 
+                test = raw_input('\n1. Play learnt policy visually\n\
+2. Run policy to collect statistical data\n3. Store policy\n4. Quit\nInput the selection:\n')
+                if test == '1':
+                    self.episode(policy = opt['policy'], steps = steps)
+                elif test == '2':
+                    self.test(policy = opt['policy'])
+                elif test == '3':
+                    if n == '1':
+                        self.write_policy_file(policy = policy, path = './data/policy_cartpole')
+                    else:
+                        self.write_policy_file(policy = policy, path = './data/policy_cartpole_' + str(safety))
+                elif test == '4':
+                    break
                 else:
-                    self.write_policy_file(policy = policy, path = './data/policy_cartpole_' + str(safety))
+                    print("Invalid input")
+
+        return opt, opt_
             
 
     def synthesize(self, learn, exp_mu, opt = None, safety = None, steps = None):
@@ -500,7 +365,7 @@ class cartpole(grids, object):
         ## opt = (diff, theta, policy, mu)
 
         print("\n\n\nLearning result for safety specification:\n")
-        print("\nP<=" + str(safety) + "[true U<=" + str(steps) + " 'unsafe']\n") 
+        print("\nP<=" + str(safety) + " [U<= 200 ((position < -0.3 && angle < -20)||(position > 0.3 && angle > 20))]\n")
 
         print("\n>>>>>>>>Apprenticeship Learning learnt policy weight vector:")
         print(opt_['theta'])
@@ -514,208 +379,6 @@ class cartpole(grids, object):
         
         return opt, opt_
 
-    def run_tool_box(self, steps = 200):
-        paths = []
-
-        self.M.starts = list()
-
-        unsafes = np.zeros([len(self.M.S)]).astype(bool)
-        for u in self.M.unsafes:
-            unsafes[u] = True
-
-        starts = np.zeros([len(self.M.S)]).astype(bool)
-        
-        self.M.T = list()
-        for a in self.M.A:
-            self.M.T.append(np.zeros([len(self.M.S), len(self.M.S)]))
-        
-        gamma = self.M.discount
-        exp = MDP.SparseExperience(len(self.M.S), len(self.M.A));
-        model = MDP.SparseRLModel(exp, gamma);
-        solver = MDP.PrioritizedSweepingSparseRLModel(model, 0.1, 500);
-        policy = MDP.QGreedyPolicy(solver.getQFunction());
-
-        using = 0
-	episodes=0
-	win = 0
-	streak = list()
-	
-        maxepisodes = 10000
-        samples = 0
-	for i_episode in xrange(maxepisodes):
-                path = []
-    		o = env.reset()
-
-                s_i = self.observation_to_index(o)
-                self.M.T[a][self.M.S[-2], s_i] += 1.0
-
-		dead = False
-                done = False
-
-    		for t in xrange(steps):
-        	    # Convert the observation into our own space
-        	    s = self.observation_to_index(o);
-        	    # Select the best action according to the policy
-        	    a = policy.sampleAction(s)
-        	    # Act
-        	    o_, rew, done, info = env.step(a);
-        	    # See where we arrived
-        	    s_ = self.observation_to_index(o_);
-
-                    self.M.T[a][s, s_] += 1.0
-                    
-                    path.append([t, s, a, s_])
-
-                    if unsafes[s_]:
-		        dead = True
-                        
-        	    if done:
-                        if t < steps - 2:
-                            dead = True
-                        if i_episode > samples:
-            		    break
-                            
-                    # Record information, and then run PrioritizedSweeping
-        	    exp.record(s, a, s_, rew);
-       		    model.sync(s, a, s_);
-		    solver.stepUpdateQ(s, a);
-		    solver.batchUpdateQ();
-
-		    o = o_;
-
-   		#   if render or i_episode == maxepisodes - 1:
-      		#       env.render()
-
-    		  
-                # Here we have to set the reward since otherwise rewards are
-                # always 1.0, so there would be no way for the agent to distinguish
-                # between bad actions and good actions.
-                tag = ' '
-    		if done and i_episode > samples:
-                    rew = -10
-                    
-                    if t < (steps - 2)/2:
-                        rew = -100
-                        tag ='xxx'
-		        streak.append(0)
-                    elif t >= steps - 2:
-		        rew = 100
-       		        tag = '###';
-        	        streak.append(1)
-      		        win += 1;
-  		        if not dead:
-                            using += 1
-                            paths.append(path)
-                            if not starts[s_i]:
-                                #self.M.starts.append(s_i)
-                                starts[s_i] = True
-                                print("start from %d" % s)
-
-                if done and i_episode < samples:
-                    if dead:
-                        rew = -100
-                        tag ='xxx'
-		        streak.append(0)
-                    else:
-		        rew = 100
-       		        tag = '###';
-        	        streak.append(1)
-      		        win += 1;
-                        if True:
-                            using += 1
-                            paths.append(path)
-                            if not starts[s_i]:
-                                starts[s_i] = True
-                                print("start from %d" % s)
-
-
-  		if len(streak) > 100:
-      			streak.pop(0)
-
-    		episodes +=1;
-    		exp.record(s, a, s_, rew);
-    		model.sync(s, a, s_);
-    		solver.stepUpdateQ(s, a);
-    		solver.batchUpdateQ();
-                # If the learning process gets stuck in some local optima without
-                # winning we just reset the learning. We don't want to try to change
-                # what the agent has learned because this task is very easy to fail
-                # when trying to learn something new (simple exploration will probably
-                # just make the pole topple over). We just want to learn the correct
-                # thing once and be done with it.
-		if episodes == 100:
-    		    #if sum(streak) < 90:
-		    #	using -= episodes
-		    #	demo_mu -= demo_mu_episodes 
-		    #else:
-		    #	for s_ in unsafe:
-		    #		if s_[0] * coords[0] + s_[1] == s1:
-		    #			using -= episodes
-		    #			demo_mu -= demo_mu_episodes 
-    		    if sum(streak) < 30:
-	                exp = MDP.SparseExperience(len(self.M.S), len(self.M.A));
-       			model = MDP.SparseRLModel(exp, gamma);
-        		solver = MDP.PrioritizedSweepingSparseRLModel(model, 0.1, 500);
-      	  		policy = MDP.QGreedyPolicy(solver.getQFunction());
-		    if sum(streak) < 80:
-
-                        #paths = list()
-			#using = 0
-                        #self.M.starts = list()
-                        pass
-		    episodes = 0
-		if using > maxepisodes/3 and i_episode > maxepisodes/2:
-		    break
-
-	    	print "Episode {} finished after {} timecoords {} win:{} use:{}".format(i_episode, t+1, tag, win, using)
-
-	
-        file = open('./data/start_cartpole', 'w')
-	for s in self.M.S:
-            if starts[s]:
-                print("start from %d" % s)
-	        file.write(str(s) + '\n')
-        file.close()
-
-    
-        for a in range(len(self.M.A)):
-            for s in range(len(self.M.S)):
-                tot = np.sum(self.M.T[a][s])
-                if tot == 0.0:
-                    self.M.T[a][s, s] = 0.0
-            self.M.T[a] = sparse.bsr_matrix(self.M.T[a]).astype(np.float16)        
-            self.M.T[a] = sparse.diags(1.0/self.M.T[a].sum(axis = 1).A.ravel()).dot(self.M.T[a]).todense()
-
-	file = open('./data/mdp_cartpole', 'w')
-        for s in self.M.S:
-            for a in self.M.A:
-                for s_ in self.M.S:
-                    file.write(str(s) + ' ' 
-                                + str(a) + ' ' 
-                                + str(s_) + ' ' 
-                                + str(self.M.T[a][s, s_]) + '\n')
-        file.close()
-
-        file = open('./data/unsafe_cartpole', 'w')
-        for s in self.M.unsafes:
-            file.write(str(s) + '\n')
-        file.close()
-
-        file = open('./data/state_space_cartpole', 'w')
-        file.write('states\n' + str(len(self.M.S)) + '\nactions\n' + str(len(self.M.A)))
-        file.close()
-
-        file = open('./data/demo_cartpole', 'w')
-        for path in paths:
-            for t in range(len(path)):
-                file.write(str(path[t][0]) + ' ' 
-                            + str(path[t][1]) + ' ' 
-                            + str(path[t][2]) + ' '
-                            + str(path[t][3]) + '\n')
-        file.close()
-        
-
-    
 if __name__ == "__main__":
     cartpole = cartpole()
     #cartpole.run_tool_box()
@@ -731,19 +394,4 @@ if __name__ == "__main__":
     safety = 0.10
     
     cartpole.synthesize_from_demo_file(safety = safety, steps = 200)
-
-    policy = cartpole.read_policy_file('./data/policy_cartpole')
-    real = raw_input("Play AL policy. Ready? [Y/N]")
-    while real == 'y' or real == 'Y':
-        cartpole.episode(policy = policy)
-        real = raw_input("Play AL policy again? [Y/N]")
-    
-
-    policy = cartpole.read_policy_file('./data/policy_cartpole_' + str(safety))
-    real = raw_input("Play SAAL policy. Ready? [Y/N]")
-    while real == 'y' or real == 'Y':
-        cartpole.episode(policy = policy)
-        real = raw_input("Play SAAL policy again? [Y/N]")
-
-    
 
