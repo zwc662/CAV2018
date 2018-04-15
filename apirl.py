@@ -67,13 +67,13 @@ class apirl():
         exp_mu += mu_temp
 
         exp_mu = exp_mu/num_paths
-        avg = avg/num_paths
+        #avg = avg/num_paths
 
         init_dist /= num_paths
         self.M.set_initial_transitions(init_dist)
 
         print("%d demonstrated paths in total" % num_paths)
-        print("Average step length is %d" % avg)
+        #print("Average step length is %d" % avg)
         print("Expert expected features are:")
         print(exp_mu)
         return exp_mu

@@ -336,9 +336,9 @@ class cartpole(grids, object):
             n = raw_input('\n1. Test AL policy, \n2. Test Safety-Aware AL policy, \n3. Quit\n\
 Input the seletion:\n')
             if n == '1':
-                policy = opt_['policy']
+                policy = opt_['policy'].copy()
             elif n == '2':
-                policy = opt['policy']
+                policy = opt['policy'].copy()
             elif n == '3':
                 break
             else:
@@ -348,9 +348,9 @@ Input the seletion:\n')
                 test = raw_input('\n1. Play learnt policy visually\n\
 2. Run policy to collect statistical data\n3. Store policy\n4. Quit\nInput the selection:\n')
                 if test == '1':
-                    self.episode(policy = opt['policy'], steps = steps)
+                    self.episode(policy, steps = steps)
                 elif test == '2':
-                    self.test(policy = opt['policy'])
+                    self.test(policy)
                 elif test == '3':
                     if n == '1':
                         self.write_policy_file(policy = policy, path = './data/policy_cartpole')

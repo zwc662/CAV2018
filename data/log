@@ -3,11 +3,18 @@
 
 Learning result for safety specification:
 
-P<=0.2 [U<= 200 ((position < -0.3 && angle < -20)||(position > 0.3 && angle > 20))]
+P<=0.1[true U<=64 'unsafe']
 
 >>>>>>>>Apprenticeship Learning learnt policy
-PRISM model checking result: 0.400350
+PRISM model checking result: 0.857011
 
->>>>>>>>Safety-Aware Apprenticeship Learning
-PRISM model checking result: 0.093355
-Unsafe ratio: 0.146000Average step length: 134.000000
+>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy
+PRISM model checking result: 0.000000
+Experiment: mountaincar
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure.
+Given safety spec:
+P=? [U<= 200 ((position < -0.9 && velocity < -0.03)||(position > 0.3 && velocity > 0.03))]
+
+PRISM model checking the probability of reaching the unsafe states: 0.519563
+Unsafe ratio: 0.720000Average step length: 65.000000

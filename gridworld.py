@@ -41,12 +41,19 @@ class gridworld(grids, object):
     
     def set_initial_opt(self):
         self.opt = {}
+        '''
         self.opt['policy'] = np.zeros([len(self.M.S), len(self.M.A)])
         self.opt['policy'][: -2][0] = 1.0
 
         self.M.set_policy(self.opt['policy'])
         self.opt['mu'] = self.M.expected_features_manual()[-2]
-        self.opt['theta'] = -1 * np.ones([len(self.M.features[0])])
+        #learn = cegal(self.M, max_iter = 30)
+        #self.opt = super(cegal, learn).iteration(self.opt['mu'])
+        '''
+        mus, policy = self.M.optimal_policy(theta = np.array([-0.34664092, -0.93722276, -0.03772208, -0.0055321 ]))
+        self.opt['mu'] = mus[-2]
+        self.opt['theta'] = np.array([-0.34664092, -0.93722276, -0.03772208, -0.0055321 ])
+        self.opt['policy'] = policy
     
 
     def build_mdp_from_file(self):
