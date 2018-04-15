@@ -1,4 +1,13 @@
 
-PRISM model checking result: 0.000000
-Experiment: cartpole
-Unsafe ratio: 0.442000Average step length: 123.000000
+
+
+Learning result for safety specification:
+
+P<=0.2 [U<= 200 ((position < -0.3 && angle < -20)||(position > 0.3 && angle > 20))]
+
+>>>>>>>>Apprenticeship Learning learnt policy
+PRISM model checking result: 0.400350
+
+>>>>>>>>Safety-Aware Apprenticeship Learning
+PRISM model checking result: 0.093355
+Unsafe ratio: 0.146000Average step length: 134.000000

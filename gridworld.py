@@ -46,7 +46,7 @@ class gridworld(grids, object):
 
         self.M.set_policy(self.opt['policy'])
         self.opt['mu'] = self.M.expected_features_manual()[-2]
-        self.opt['theta'] = np.zeros([len(self.M.features[0])])
+        self.opt['theta'] = -1 * np.ones([len(self.M.features[0])])
     
 
     def build_mdp_from_file(self):
