@@ -147,6 +147,14 @@ class cartpole(grids, object):
         print("\nPRISM model checking the probability of reaching unsafe states: %f\n" % prob)
 
 
+        file = open('log', 'a')
+        file.write("\n>>>>>>>>Apprenticeship Learning learns a policy \
+ which is an optimal policy of reward function as in the figure.")
+        file.write("\nGiven safety spec:\nP=? [U<= " + str(self.dim**2) + " 'unsafe']\n")
+        file.write("\nPRISM model checking the probability of reaching\
+ the unsafe states: %f\n" % prob)
+        file.close()
+
         while True:
             test = raw_input('\n1. Play learnt policy visually\n\
 2. Run policy to collect statistical data\n3. Store policy\n4. Quit\nInput the selection:\n')
@@ -306,6 +314,11 @@ class cartpole(grids, object):
 
         print('Unsafe ratio: %f' % dead)
         print("Average step length: %f" % avg)
+        
+        file.open('log', 'a')
+        file.write('Unsafe ratio: %f' % dead)
+        file.write("Average step length: %f" % avg)
+        file.close()
 
     def synthesize_from_demo_file(self, safety = 0.3, steps = 200, path = './data/demo_cartpole'):
         if safety is None:
@@ -376,6 +389,21 @@ Input the seletion:\n')
         print("\nFeature vector margin: %f" % opt['diff'])
         print("\nPRISM model checking result: %f\n" % opt['prob'])
         
+        file = open('log', 'w')
+        file.write("\n\n\nLearning result for safety specification:\n")
+        file.write("\nP<=" + str(safety) + "[true U<=" + str(steps) + " 'unsafe']\n") 
+
+        file.write("\n>>>>>>>>Apprenticeship Learning learnt policy weight vector:")
+        file.write(opt_['theta'])
+        #print("\nFeature vector margin: %f" % opt_['diff'])
+        file.write("\nPRISM model checking result: %f\n" % opt_['prob'])
+
+        file.write("\n>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy weight vector:")
+        file.write(opt['theta'])
+        #print("\nFeature vector margin: %f" % opt['diff'])
+        file.write("\nPRISM model checking result: %f\n" % opt['prob'])
+        file.close()
+
         return opt, opt_
 
 if __name__ == "__main__":

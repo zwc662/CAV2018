@@ -1,11 +1,11 @@
 ---------------------------------
 ----------- STATISTICS ----------
 ---------------------------------
-Task: Counterexample for P(t)<0.025
-Model Checking result of original system: 0.195259
-Closure probability: 0.0250007
-Time for model checking: 0.00123 secs
-Time of counter example computation: 0.009247 secs [Without Pre-/Post processing]
+Task: Counterexample for P(t)<0.05
+Model Checking result of original system: 0.259461
+Closure probability: 0.05
+Time for model checking: 0.001306 secs
+Time of counter example computation: 0.711323 secs [Without Pre-/Post processing]
 Search params: CONCRETE, GLOBAL, PATH-based
 Base node selection for concretization: Select All Visible
 Additional selection criterion: None
@@ -14,6 +14,6 @@ During the 1 refinement steps the following number of shortest paths/closures we
 -----------------------------------------------
   step |      #paths |  #closures | #conc. scc
 -----------------------------------------------
-     1 |         962 |          0 |           1
+     1 |       58307 |          0 |           1
 -----------------------------------------------
-Total #paths: 962, total #closures: 0, total #concretized SCCs: 1
+Total #paths: 58307, total #closures: 0, total #concretized SCCs: 1
