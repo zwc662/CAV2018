@@ -24,7 +24,7 @@ policy while satisfing the safety specification can be learnt.
 
 Installation
 ============
-There is no other installation except loading the OVA file to a Virtualbox. The artifact runs on a Ubuntu 16.04 OS with 8-core(using hyperthreading, 4 physical cores) 3.6GHz CPU, 8GB RAM and 32GB storage size. 
+There is no other installation except loading the OVA file to a Virtualbox. The artifact runs on a Ubuntu 16.04 OS with 4-core 8-thread 3.6GHz CPU, 8GB RAM and 32GB storage size. 
 
 Please login 'cav2018' with password 'cav2018' and enter the directory '/home/cav2018/CAV2018/'.
 
