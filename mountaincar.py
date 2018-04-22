@@ -20,6 +20,8 @@ import cProfile
 import math
 from grids import grids
 
+#import MDP
+
 env = gym.make('MountainCar-v0')
 
 class mountaincar(grids, object):
@@ -71,10 +73,10 @@ class mountaincar(grids, object):
         self.M.unsafe = []
         for s in self.M.S[:-2]:
             coords = self.index_to_coord(s)
-	    if (coords[0] <= 3 * (self.grids[0] - 2)/18.0 \
-            and coords[1] <= (7 - 3) * (self.grids[1] - 2)/14.0) \
-            or (coords[0] >=  (18 - 3) * (self.grids[0] - 2)/18.0 \
-            and coords[1] >= (7 + 3) * (self.grids[0] - 2)/14.0):
+	    if (coords[0] <= 1 * (self.grids[0] - 2)/18.0 \
+            and coords[1] <= (7 - 4) * (self.grids[1] - 2)/14.0) \
+            or (coords[0] >=  (18 - 1) * (self.grids[0] - 2)/18.0 \
+            and coords[1] >= (7 + 4) * (self.grids[1] - 2)/14.0):
                 #(-\infty, -1.0] or [1.0, \infty)
 	        self.M.unsafes.append(s)
         #self.M.unsafes.append(self.M.S[-1])
@@ -150,7 +152,8 @@ class mountaincar(grids, object):
         print("\nFeature vector margin: %f" % opt['diff'])
         print("\nGiven safety spec:\nP=? [U<= 200 ((position < -0.9 && velocity < -0.03)||(position > 0.3 && velocity > 0.03))]\n")
         print("\nPRISM model checking the probability of reaching unsafe states: %f\n" % prob)
-
+        opt['prob'] = prob
+        
         file = open('./data/log', 'a')
         file.write("\n>>>>>>>>Apprenticeship Learning learns a policy \
  which is an optimal policy of reward function as in the figure.")
@@ -394,7 +397,7 @@ class mountaincar(grids, object):
         ## opt = (diff, theta, policy, mu)
 
         print("\n\n\nLearning result for safety specification:\n")
-        print("\nP<=" + str(safety) + " [U<= 66 ((position < -0.9 && velocity < -0.03 )||(position > 0.3 && velocity > 0.03))]\n")
+        print("\nP<=" + str(safety) + " [U<= 66 (position < -1.1 && velocity < -0.04)||(position > 0.5 && velocity > 0.04)]\n")
 
         print("\n>>>>>>>>Apprenticeship Learning learnt policy weight vector:")
         print(opt_['theta'])
@@ -408,7 +411,7 @@ class mountaincar(grids, object):
         
         file = open('./data/log', 'w')
         file.write("\n\n\nLearning result for safety specification:\n")
-        file.write("\nP<=" + str(safety) + " [U<= 66 ((position < -0.9 && velocity < -0.03 )||(position > 0.3 && velocity > 0.03))]\n")
+        file.write("\nP<=" + str(safety) + " [U<= 66 (position < -1.1 && velocity < -0.04)||(position > 0.5 && velocity > 0.04)]\n")
 
         file.write("\n>>>>>>>>Apprenticeship Learning learnt policy")
         #print("\nFeature vector margin: %f" % opt_['diff'])
@@ -420,7 +423,190 @@ class mountaincar(grids, object):
         file.close()
 
         return opt, opt_
+    """	
+    def run_tool_box(self):
 
+        paths = []
+
+        self.M.starts = list()
+
+        unsafes = np.zeros([len(self.M.S)]).astype(bool)
+        for u in self.M.unsafes:
+            unsafes[u] = True
+
+        starts = np.zeros([len(self.M.S)]).astype(bool)
+        for u in self.M.starts:
+            starts[u] = True
+        
+        self.M.T = list()
+        for a in self.M.A:
+            self.M.T.append(np.zeros([len(self.M.S), len(self.M.S)]))
+        
+        gamma = self.M.discount
+        exp = MDP.SparseExperience(len(self.M.S), len(self.M.A));
+        model = MDP.SparseRLModel(exp, gamma);
+        solver = MDP.PrioritizedSweepingSparseRLModel(model, 0.1, 500);
+        policy = MDP.QGreedyPolicy(solver.getQFunction());
+
+        using = 0
+        episodes=0
+        win = 0
+        streak = list()
+    
+        maxepisodes = 10000
+        for i_episode in xrange(maxepisodes):
+            path = []
+            o = env.reset()
+
+            s_i = self.observation_to_index(o)
+
+            dead = False
+            rec = self.steps
+            done = False
+
+            for t in xrange(self.steps):
+                # Convert the observation into our own space
+                s = self.observation_to_index(o);
+                # Select the best action according to the policy
+                a = policy.sampleAction(s)
+                # Combo act
+                for i in range(self.combo): 
+                    o_, rew, done, info = env.step(a);
+                        # See where we arrived
+                    s_ = self.observation_to_index(o_);
+                        #path.append([(self.combo + 1) * t + i, s, a, s_])
+                        #self.M.T[a][s, s_] += 1.0
+
+                    if unsafes[s_]:
+                        dead = True
+
+                    if done:
+                        break
+
+                o_, rew, done, info = env.step(a);
+                # See where we arrived
+                s_ = self.observation_to_index(o_);
+
+                self.M.T[a][s, s_] += 1.0
+                    #path.append([(self.combo + 1) * t + self.combo, s, a, s_])
+                path.append([t, s, a, s_])
+
+                if unsafes[s_]:
+                    dead = True
+                        
+                if done:
+                    break
+                    # Record information, and then run PrioritizedSweeping
+                exp.record(s, a, s_, rew);
+                model.sync(s, a, s_);
+                solver.stepUpdateQ(s, a);
+                solver.batchUpdateQ();
+
+                o = o_;
+
+        #   if render or i_episode == maxepisodes - 1:
+            #    env.render()
+
+              
+                # Here we have to set the reward since otherwise rewards are
+                # always 1.0, so there would be no way for the agent to distinguish
+                # between bad actions and good actions.
+            if True:
+                if t >= self.steps - 1:
+                    rew = -100
+                    tag ='xxx'
+                    streak.append(0)
+                else:
+                    rew = self.steps - t
+                    tag = '###';
+                    streak.append(1)
+                    win += 1;
+
+                    if not dead:
+                        using += 1
+                #if True:
+                        paths.append(path)
+                        if not starts[s_i]:
+                            self.M.starts.append(s_i)
+
+            if len(streak) > 100:
+                streak.pop(0)
+
+
+            episodes +=1;
+            exp.record(s, a, s_, rew);
+            model.sync(s, a, s_);
+            solver.stepUpdateQ(s, a);
+            solver.batchUpdateQ();
+                # If the learning process gets stuck in some local optima without
+                # winning we just reset the learning. We don't want to try to change
+                # what the agent has learned because this task is very easy to fail
+                # when trying to learn something new (simple exploration will probably
+                # just make the pole topple over). We just want to learn the correct
+                # thing once and be done with it.
+            if episodes == 100:
+                if sum(streak) < 30:
+                    exp = MDP.SparseExperience(len(self.M.S), len(self.M.A));
+                    model = MDP.SparseRLModel(exp, gamma);
+                    solver = MDP.PrioritizedSweepingSparseRLModel(model, 0.1, 500);
+                    policy = MDP.QGreedyPolicy(solver.getQFunction());
+                #if sum(streak) < 80:
+                    paths = list()
+                    using = 0
+                    self.M.starts = list()
+                    pass
+            episodes = 0
+
+            if using >= 2000:# and i_episode > maxepisodes/2:
+                break
+
+            print "Episode {} finished after {} timecoords {} win:{} use:{}".format(i_episode, len(path), tag, win, using)
+
+    
+        file = open('./data/start_mountaincar', 'w')
+        for start in self.M.starts:
+            file.write(str(start) + '\n')
+        file.close()
+
+    
+        for a in range(len(self.M.A)):
+            for s in range(len(self.M.S)):
+                tot = np.sum(self.M.T[a][s])
+                if tot == 0.0:
+                    self.M.T[a][s, s] = 0.0
+            self.M.T[a] = sparse.bsr_matrix(self.M.T[a])        
+            self.M.T[a] = sparse.diags(1.0/self.M.T[a].sum(axis = 1).A.ravel()).dot(self.M.T[a]).todense()
+
+        '''
+        file = open('./data/mdp_mountaincar', 'w')
+        for s in self.M.S:
+            for a in self.M.A:
+                for s_ in self.M.S:
+                    file.write(str(s) + ' ' 
+                                + str(a) + ' ' 
+                                + str(s_) + ' ' 
+                                + str(self.M.T[a][s, s_]) + '\n')
+        file.close()
+        '''
+        
+        file = open('./data/unsafe_mountaincar', 'w')
+        for s in self.M.unsafes:
+            file.write(str(s) + '\n')
+        file.close()
+
+        file = open('./data/state_space_mountaincar', 'w')
+        file.write('states\n' + str(len(self.M.S)) + '\nactions\n' + str(len(self.M.A)))
+        file.close()
+
+        file = open('./data/demo_mountaincar', 'w')
+        for path in paths:
+            for t in range(len(path)):
+                file.write(str(path[t][0]) + ' ' 
+                            + str(path[t][1]) + ' ' 
+                            + str(path[t][2]) + ' '
+                            + str(path[t][3]) + '\n')
+        file.close()
+    """
 
     def model_check(self, policy, safety = None, steps = None):
         if steps is None:
@@ -441,10 +627,13 @@ if __name__ == "__main__":
 
     mountaincar = mountaincar(safety = safety, combo = combo, steps = steps)
 
-    
+    #mountaincar.run_tool_box() 
     mountaincar.build_MDP_from_file()
 
-    #mountaincar.learn_from_demo_file()
+    opt = mountaincar.learn_from_demo_file()
+    safety = (int(opt['prob'] * 10) - 1)/10.0
+    safety = 0.2
+ 
 
     mountaincar.synthesize_from_demo_file(safety)
 
