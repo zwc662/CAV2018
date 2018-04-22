@@ -150,14 +150,14 @@ class mountaincar(grids, object):
         print("\n>>>>>>>>Apprenticeship Learning learnt policy weight vector:")
         print(opt['theta'])
         print("\nFeature vector margin: %f" % opt['diff'])
-        print("\nGiven safety spec:\nP=? [U<= 200 ((position < -0.9 && velocity < -0.03)||(position > 0.3 && velocity > 0.03))]\n")
+        print("\nGiven safety spec:\nP=? [U<= 200 ((position < -1.1 && velocity < -0.04)||(position > 0.5 && velocity > 0.04))]\n")
         print("\nPRISM model checking the probability of reaching unsafe states: %f\n" % prob)
         opt['prob'] = prob
         
         file = open('./data/log', 'a')
         file.write("\n>>>>>>>>Apprenticeship Learning learns a policy \
  which is an optimal policy of reward function as in the figure.")
-        file.write("\nGiven safety spec:\nP=? [U<= 200 ((position < -0.9 && velocity < -0.03)||(position > 0.3 && velocity > 0.03))]\n")
+        file.write("\nGiven safety spec:\nP=? [U<= 200 ((position < -1.1 && velocity < -0.04)||(position > 0.5 && velocity > 0.04))]\n")
         file.write("\nPRISM model checking the probability of reaching\
  the unsafe states: %f\n" % prob)
         file.close()
