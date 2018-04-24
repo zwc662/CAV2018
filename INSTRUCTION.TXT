@@ -133,7 +133,7 @@ The file named 'log' in ./data folder records the model checking results and sta
 Please refer to the example below:
 
 "
-04/24/18 04/24/18 EDT
+Time Stamp: [2018, 4, 15, 8, 20, 29]
 Experiment: cartpole
 
 AL ends after 2 iterations
@@ -157,12 +157,16 @@ P<=0.1 [U<= 200 ((position < -0.3 && angle < -20)||(position > 0.3 && angle > 20
 
 >>>>>>>>Safety-Aware Apprenticeship Learning
 PRISM model checking result: 0.071744
+
+Test CEGAL policy:
+Unsafe Rate: 80.90%
+Average Step: 159
 "
 
 Note:
 1. Experiments all begin with a timestamp and experiment name as in the example, i.e. 
 
-			'04/24/18 04/24/18 EDT
+			'Time Stamp: [2018, 4, 15, 8, 20, 29]
 			 Experiment: cartpole'
 
 2. a. 'PRISM model checking .....: XXX' in log file corresponds to 'MC Result' in the paper.
@@ -170,7 +174,7 @@ Note:
    c. 'CEGAL ends after XXX iterations' in log file corresponds to 'Num. of Iters' for CEGAL.
    d. 'Average step length: XXXX' in log file corresonds to 'Avg. Steps'.
 
-3. As can be seen in the example, in each experiment, there are two records for AL. When comparing to the paper, please only use the first one, i.e. 
+3. As can be seen in the example, in each experiment, there are two records for AL. When comparing to the paper, please check the iteration number of AL right above ">>>>>>>>Apprenticeship Learning learns a policy.", i.e. 
 
 			"AL ends after 2 iterations
 			>>>>>>>>Apprenticeship Learning learns a policy.
@@ -178,9 +182,9 @@ Note:
 			P=? [U<= 200 ((position < -0.3 && angle < -20)||(position > 0.3 && angle > 20))]
  			PRISM model checking the probability of reaching the unsafe states: 0.491358"
 
-The second one, i.e. 'AL ends after 50 iterations...', is used to generate the initial counterexample for CEGAL. Please ignore this record since epsilon will be temporarily set to 1E-5 for it. And under this small epsilon AL will run for 50 iterations(max iteration) before it ends. The data in the paper should be consistent with the first record of AL, including iteration number and model checking results. Please identify them in the log file.
+As well as the model checking result as above. The 'AL ends after 50 iterations...' below 'PRISM model checking the...', is used to generate the initial counterexample for CEGAL. Please ignore this message since epsilon will be temporarily set to 1E-5 for it. And under this small epsilon AL will always run for 50 iterations(max iteration) before it ends. The data in the paper is consistent with the first record of AL, including iteration number and model checking results. Please identify them in the log file.
 
-4. There may be slight variation between the result in log file and the data in the paper. This is largely due to the randomization in the algorithm. It should be normal that differences in number of iterations, average step length are less than 2. However, if serious inconsistency happens, please run the program for at least one more time.
+4. There may be slight variation between the result in log file and the data in the paper. This is largely due to the randomization in the algorithm. It is normal that differences in number of iterations, average step length are less than 3. However, if serious inconsistency happens, please run the program for at least one more time.
 
 5. The data in the paper uses the precision of one decimal. Don't recommend user to try the p*=0.0% because the safest policy may has less than 0.1% unsafe probability. 
 
