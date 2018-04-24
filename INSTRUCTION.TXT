@@ -158,7 +158,7 @@ P<=0.1 [U<= 200 ((position < -0.3 && angle < -20)||(position > 0.3 && angle > 20
 >>>>>>>>Safety-Aware Apprenticeship Learning
 PRISM model checking result: 0.071744
 
-Test CEGAL policy:
+Test CEGAL policy
 Unsafe Rate: 80.90%
 Average Step: 159
 "
