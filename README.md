@@ -186,7 +186,15 @@ Note:
 
 As well as the model checking result as above. The 'AL ends after 50 iterations...' below 'PRISM model checking the...', is used to generate the initial counterexample for CEGAL. Please ignore this message since epsilon will be temporarily set to 1E-5 for it. And under this small epsilon AL will always run for 50 iterations(max iteration) before it ends. The data in the paper is consistent with the first record of AL, including iteration number and model checking results. Please identify them in the log file.
 
-4. There may be inconsistency between the results in log file and the data in the paper. This is largely due to the randomization in the algorithm. Some optimization in using third-party tools in the program can also lead to variation. For instance, there is a time limit for COMICS to generate counterexample. If it fails to ouput in 2s, then p* is by half so that COMICS can enumerate less counterexample paths. However, the runtime of COMICS can be affected by the condition of the system, e.g. for the same p*, COMICS may fail to output in 2s when CPU is busy whereas manage to output in less than 1s when CPU is not busy. Different counterexample can largely influence the final result. It is normal that differences in number of iterations, average step length are less than 3. However, if serious inconsistency happens, please run the program for at least one more time. 
+4. There may be inconsistency between the results in log file and the data in the paper. Some input parameters in the table may 
+have unstable output. This is largely due to the randomization in the algorithm. Some optimization in using third-party tools in 
+the program can also lead to unstability. For instance, there is a time limit for COMICS to generate counterexample. If it fails to ouput in 2s, then p* is by half so that COMICS can enumerate less counterexample paths. However, the runtime of COMICS can be 
+affected by the condition of the system, e.g. for the same p*, COMICS may fail to output in 2s when CPU is busy whereas manage to
+output in less than 1s when CPU is not busy. Different counterexample can largely influence the final result. It is normal that 
+differences in number of iterations, average step length between the data in log file and results in the paer are less than 10,
+i.e. variation in [-10, +10] should be acceptable. However, if serious inconsistency happens, please run the program for at least 
+one more time.
+ 
 
 5. The data in the paper uses the precision of one decimal. We don't recommend user to try the p*=0.0% because the safest policy may has less than 0.1% unsafe probability. 
 
