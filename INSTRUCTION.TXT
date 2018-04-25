@@ -20,7 +20,8 @@ By using the learnt policy, the learning agent can finish the task in the simila
 
 In Safety-Aware apprenticeship learning, a safety specifiation is given, and a counterexample will be
 generated if a learnt policy doesn't satisfy the given safety specification. As counterexample is 
-also a set of paths, the expected feature counts of the counterexample paths can be utilized to train a safer policy by maximumlly deviating its expected feature counts from the counterexample
+also a set of paths, the expected feature counts of the counterexample paths can be utilized to train a safer policy by
+maximumlly deviating its expected feature counts from the counterexample
 feature counts. By solving a multi-objective optimization function, a policy that resembles expert
 policy while satisfing the safety specification can be learnt.
 
