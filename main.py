@@ -1,6 +1,8 @@
 from mountaincar import mountaincar
 from cartpole import cartpole
 from gridworld import gridworld
+import os
+import time
 
 def play_gridworld():
     dim = raw_input('\n#######Play nxn gridworld. n = ? Please input an integer or press Enter to use default n = 8\n')
@@ -12,7 +14,12 @@ def play_gridworld():
     grids.build_mdp()
     
     t = raw_input('\n#######Use Apprenticeship Learning to learn from human demonstration. Maximum step length is ' + str(dim**2) + '.\nPress Enter to continue\n')
-    grids.learn_from_human_demo(steps = dim**2)
+    t = raw_input('\n1. Demonstrate by hand?\n2. Use proviede 10000 demonstrations as in the paper?\nInput your selection:\n')
+    if int(t) == 1:
+        grids.learn_from_human_demo(steps = dim**2)
+    else:
+        os.system('cp ./data/demo_gridworld_ ./data/demo_gridworld')
+        grids.learn_from_demo_file()
 
     print('\n#######Please input the safety threshold p* for the safety specification below.\nP <= p* [U<=' + str(dim**2) + " 'unsafe']\n")
     safety = raw_input("\nPlease input p*=?\n")
@@ -57,7 +64,7 @@ No unsafe behavior defined as below is performed in any of the episodes.\n")
     opt = mc.learn_from_demo_file()
 
     print("\nNext, try Safety-Aware apprenticeship learning\n")
-    print("\n#######Please input the safety threshold p* for the safety specification below.\nP <= p* [U<= 200 ((position < -1.1 && velocity < -0.04)||(position > 0.5 && velocity > 0.04))]\n")
+    print("\n#######Please input the safety threshold p* for the safety specification below.\nP <= p* [U<= 66 ((position < -1.1 && velocity < -0.04)||(position > 0.5 && velocity > 0.04))]\n")
     safety = raw_input("\nPlease input p*=?\n")
     safety = float(safety)
     opt, opt_ = mc.synthesize_from_demo_file(safety)
@@ -72,16 +79,18 @@ if __name__ == "__main__":
 Please input the index:\n')
     index = int(index)
     file = open('./data/log', 'a')
+    file.write('\n\n\n\n')
+    file.write(str('Time Stamp: [') + time.strftime('%Y, %m, %d, %H, %M, %S') + str(']\n'))
     if index == 1:
-        file.write('Experiment: gridworld\n')
+        file.write('\nExperiment: gridworld\n')
         file.close()
         play_gridworld()
     elif index == 2:
-        file.write('Experiment: cartpole\n')
+        file.write('\nExperiment: cartpole\n')
         file.close()
         play_cartpole()
     elif index == 3:
-        file.write('Experiment: mountaincar\n')
+        file.write('\nExperiment: mountaincar\n')
         file.close()
         play_mountaincar()
 

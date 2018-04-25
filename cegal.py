@@ -22,11 +22,11 @@ import re
 solvers.options['show_progress'] = False
 
 class cegal(apirl, object):
-    def __init__(self, M = None, theta = None, max_iter = 30, safety = None, steps = None):
+    def __init__(self, M = None, theta = None, max_iter = 30, safety = None, steps = None, epsilon = None):
         if sys.version_info[0] >= 3: 
             super().__init__()
         else:
-            super(cegal, self).__init__(M, theta, max_iter)
+            super(cegal, self).__init__(M, theta, max_iter, epsilon)
         self.safety = safety
         self.steps = steps
         
@@ -203,8 +203,11 @@ class cegal(apirl, object):
 	SUP = 1.0
 	K = 1.0
 
-        print("Run apprenticeship learning to start iteration.")
+        print("Run apprenticeship learning with small epsilon to start iteration.")
+        epsilon = self.epsilon 
+	self.epsilon = self.M.epsilon
         opt_ = super(cegal, self).iteration(exp_mu) 
+	self.epsilon = epsilon
         theta = np.array(opt_['theta'])
         policy = opt_['policy'].copy()
         mu = opt_['mu'].copy()
@@ -229,7 +232,7 @@ class cegal(apirl, object):
         print("\n>>>>>>>>SAAL iteration start. Expert feature vector:")
         print(exp_mu)
         print(">>>>>>>>>>Max iteration number: %d" % self.max_iter)
-        print(">>>>>>>>>>epsilon: %f" % self.M.epsilon)
+        print(">>>>>>>>>>epsilon: %f" % self.epsilon)
         print(">>>>>>>>>>Safety constraint: %f" % safety)
         while True:
             print("\n>>>>>>Iteration %d, parameter K = %f, INF = %f<<<<<<<<<<<\n" % (itr, K, INF))    
@@ -248,6 +251,9 @@ class cegal(apirl, object):
                 #break
                 if INF == K:
                     print("Stuck in local optimum of AL. Return best learnt policy.")
+		    file = open('./data/log', 'a')
+  	            file.write('\nCEGAL ends in ' + str(itr) + ' iterations\n')
+	            file.close()
                     return opt, opt_
             diff_ = diff
 
@@ -261,13 +267,16 @@ class cegal(apirl, object):
                 print("\n>>>>>>>Lastly learnt policy is verified to be safe<<<< %f\n" % prob)
                 diff = np.linalg.norm(mu - exp_mu, ord = 2)
                 print("Feature margin: %f" % diff)
-                if diff <= self.M.epsilon:
+                if diff <= self.epsilon:
                     print("\n>>>>>>>>>>>Converge<<<<<<<<<epsilon-close policy is found. Return.\n")
                     opt = {'diff': diff, 
                             'theta': np.array(theta), 
                             'policy': policy.copy(), 
                             'mu':mu.copy(), 
                             'prob': prob} 
+ 		    file = open('./data/log', 'a')
+  	            file.write('\nCEGAL ends in ' + str(itr) + ' iterations\n')
+	            file.close()
                     return opt, opt_
                 elif diff <= opt['diff']:
                     opt = {'diff': diff, 
@@ -297,6 +306,9 @@ class cegal(apirl, object):
 
                 if abs(K - INF) < self.M.epsilon:
                     print("\n>>>>>>>>>>>Converge<<<<<<<<K is too close to INF.\n")
+ 		    file = open('./data/log', 'a')
+  	            file.write('\nCEGAL ends in ' + str(itr) + ' iterations\n')
+	            file.close()
                     return opt, opt_
             theta, _  = self.MOQP(expert = exp_mu, features = features, K = K)
             '''
@@ -310,6 +322,10 @@ class cegal(apirl, object):
             theta = theta/np.linalg.norm(theta, ord = 2)
             mus, policy = self.M.optimal_policy(theta)
             mu = mus[-2].copy()
+
+	file = open('./data/log', 'a')
+	file.write('\nCEGAL ends in ' + str(itr) + ' iterations\n')
+	file.close()
 
         return opt, opt_
 

@@ -84,11 +84,11 @@ class gridworld(grids, object):
         self.M.unsafes.append(self.coord_to_index([2, self.dim - 2]))
 
 	for x in range(self.dim/2, self.dim):
-		for y in range(0, self.dim):
+		for y in range(0, self.dim/2):
 			if x - self.dim/2 + 2 >= y:
 				self.M.unsafes.append(self.coord_to_index([y, x]))
 	for y in range(self.dim/2, self.dim):
-		for x in range(0, self.dim):
+		for x in range(0, self.dim/2):
 			if y - self.dim/2 + 2 >= x:
 				self.M.unsafes.append(self.coord_to_index([y, x]))
 
@@ -176,7 +176,7 @@ class gridworld(grids, object):
     
         x=[]
         y=[]
-	for i in range(0, self.dim):
+	for i in range(0, self.dim/2):
             j = i + self.dim/2 - 2
             if j < self.dim and j >= self.dim/2:
                 x.append(j)
@@ -186,11 +186,15 @@ class gridworld(grids, object):
             elif j < self.dim - 2:
                 x.append(self.dim/2)
                 y.append(i)
+        for j in range(self.dim/2 + self.dim/2 - 2, self.dim + 1):
+	    x.append(j)
+            y.append(self.dim/2)
+
         pylab.plot(x, y, 'r')
 
         x=[]
         y=[]
-	for i in range(0, self.dim):
+	for i in range(0, self.dim/2):
             j = i + self.dim/2 - 2
             if j < self.dim and j >= self.dim/2:
                 y.append(j)
@@ -200,6 +204,9 @@ class gridworld(grids, object):
             elif j < self.dim - 1:
                 y.append(self.dim/2)
                 x.append(i)
+        for j in range(self.dim/2 + self.dim/2 - 2, self.dim + 1):
+	    y.append(j)
+            x.append(self.dim/2)
         pylab.plot(x, y, 'r')
         
 
@@ -310,13 +317,32 @@ class gridworld(grids, object):
             steps = self.steps
         theta = np.array([1., 1., -1., -1.])
         theta = theta/np.linalg.norm(theta, ord = 2)
+        _, policy = self.M.optimal_policy(theta)
+	learn = cegal(self.M, max_iter = 30)
+	prob = learn.model_check(policy, steps = self.steps)
+	print("Unsafe probability of ground true reward policy is %f" % prob)
+
+	file = open('log', 'a')
+	file.write("Unsafe probability of ground true reward policy is " +  str(prob) + "\n")
+	file.close()
+     
         self.M.rewards = np.dot(self.M.features, theta) 
         self.demo(self.M.rewards, steps = steps)
         self.learn_from_demo_file()
 
-    def learn_from_demo_file(self):
+    def learn_from_demo_file(self, path = './data/demo_gridworld'):
         learn = cegal(self.M, max_iter = 30)
-        demo_mu = learn.read_demo_file('./data/demo_gridworld')
+	theta = np.array([1., 1., -1., -1.])
+        theta = theta/np.linalg.norm(theta, ord = 2)
+        _, policy = self.M.optimal_policy(theta)
+	prob = learn.model_check(policy, steps = self.steps)
+	print("Unsafe probability of ground true reward policy is %f" % prob)
+
+	file = open('log', 'a')
+	file.write("Unsafe probability of ground true reward policy is " +  str(prob) + "\n")
+	file.close()
+
+        demo_mu = learn.read_demo_file(path)
         self.AL(demo_mu)
     
     def AL(self, exp_mu):
@@ -335,7 +361,7 @@ class gridworld(grids, object):
 
         file = open('./data/log', 'a')
         file.write("\n>>>>>>>>Apprenticeship Learning learns a policy \
- which is an optimal policy of reward function as in the figure.")
+ which is an optimal policy of reward function as in the figure\n.")
         file.write("\nGiven safety spec:\nP=? [U<= " + str(self.dim**2) + " 'unsafe']\n")
         file.write("\nPRISM model checking the probability of reaching\
  the unsafe states: %f\n" % prob)
@@ -400,23 +426,15 @@ class gridworld(grids, object):
         print("\n\n\nLearning result for safety specification:\n")
         print("\nP<=" + str(safety) + "[true U<=" + str(steps) + " 'unsafe']\n") 
 
-        print("\n>>>>>>>>Apprenticeship Learning learnt policy weight vector:")
-        print(opt_['theta'])
-        #print("\nFeature vector margin: %f" % opt_['diff'])
-        print("\nPRISM model checking result: %f\n" % opt_['prob'])
 
         print("\n>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy weight vector:")
         print(opt['theta'])
         #print("\nFeature vector margin: %f" % opt['diff'])
         print("\nPRISM model checking result: %f\n" % opt['prob'])
 
-        file = open('./data/log', 'w')
+        file = open('./data/log', 'a')
         file.write("\n\n\nLearning result for safety specification:\n")
         file.write("\nP<=" + str(safety) + "[true U<=" + str(steps) + " 'unsafe']\n") 
-
-        file.write("\n>>>>>>>>Apprenticeship Learning learnt policy")
-        #print("\nFeature vector margin: %f" % opt_['diff'])
-        file.write("\nPRISM model checking result: %f\n" % opt_['prob'])
 
         file.write("\n>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy")
         #print("\nFeature vector margin: %f" % opt['diff'])

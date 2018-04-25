@@ -94,7 +94,7 @@ class mountaincar(grids, object):
 
     def build_features(self):
         f = 18
-        self.M.features = np.zeros([len(self.M.S), 2 + f])
+        self.M.features = np.zeros([len(self.M.S), f + 2])
         feature_states = []
         for i in range(f):
             s = int(len(self.M.S) * i/f)
@@ -141,7 +141,7 @@ class mountaincar(grids, object):
     def learn_from_demo_file(self, steps = None):
         if steps is None:
             steps = self.steps
-        learn = cegal(self.M, max_iter = 30)
+        learn = cegal(self.M, max_iter = 50, epsilon = 10)
         learn.exp_mu = learn.read_demo_file('./data/demo_mountaincar') 
         print(learn.exp_mu)
         opt = super(cegal, learn).iteration(learn.exp_mu) 
@@ -150,14 +150,13 @@ class mountaincar(grids, object):
         print("\n>>>>>>>>Apprenticeship Learning learnt policy weight vector:")
         print(opt['theta'])
         print("\nFeature vector margin: %f" % opt['diff'])
-        print("\nGiven safety spec:\nP=? [U<= 200 ((position < -1.1 && velocity < -0.04)||(position > 0.5 && velocity > 0.04))]\n")
+        print("\nGiven safety spec:\nP=? [U<= 66 ((position < -1.1 && velocity < -0.04)||(position > 0.5 && velocity > 0.04))]\n")
         print("\nPRISM model checking the probability of reaching unsafe states: %f\n" % prob)
         opt['prob'] = prob
         
         file = open('./data/log', 'a')
-        file.write("\n>>>>>>>>Apprenticeship Learning learns a policy \
- which is an optimal policy of reward function as in the figure.")
-        file.write("\nGiven safety spec:\nP=? [U<= 200 ((position < -1.1 && velocity < -0.04)||(position > 0.5 && velocity > 0.04))]\n")
+        file.write("\n>>>>>>>>Apprenticeship Learning learns a policy.")
+        file.write("\nGiven safety spec:\nP=? [U<= 66 ((position < -1.1 && velocity < -0.04)||(position > 0.5 && velocity > 0.04))]\n")
         file.write("\nPRISM model checking the probability of reaching\
  the unsafe states: %f\n" % prob)
         file.close()
@@ -168,6 +167,9 @@ class mountaincar(grids, object):
             if test == '1':
                 self.episode(policy = opt['policy'], steps = steps)
             elif test == '2':
+		file = open('./data/log', 'a')
+		file.write('\nTest AL policy\n')
+                file.close()
                 self.test(policy = opt['policy'])
             elif test == '3':
                 self.write_policy_file(policy = opt['policy'], path = './data/policy_mountaincar')
@@ -324,7 +326,7 @@ class mountaincar(grids, object):
             i_episode += 1
         dead = dead/episodes
 
-        avg = 0
+        avg = 0.0
         i_episode = 0
         while i_episode < episodes:
             print("Episode %d" % i_episode)
@@ -334,13 +336,15 @@ class mountaincar(grids, object):
             avg += len(path)
             i_episode += 1
         avg /= episodes
+        if avg > 200/(1+self.combo):
+	   avg = 200/(1+self.combo)
 
         print('Unsafe ratio: %f' % dead)
         print("Average step length: %f" % avg)
 
         file = open('./data/log', 'a')
-        file.write('Unsafe ratio: %f' % dead)
-        file.write("Average step length: %f" % avg)
+        file.write('Unsafe ratio: %f\n' % dead)
+        file.write("Average step length: %f\n" % avg)
         file.close()
 
 
@@ -350,15 +354,21 @@ class mountaincar(grids, object):
         if steps is None:
             steps = self.steps
 
-        learn = cegal(self.M, max_iter = 50, safety = safety, steps = steps)
+        learn = cegal(self.M, max_iter = 50, safety = safety, steps = steps, epsilon = 10)
         exp_mu = learn.read_demo_file(path)
 
         opt, opt_ = self.synthesize(learn = learn, exp_mu = exp_mu, safety = safety, steps = steps)
         while True:
             n = raw_input('\n1. Try AL policy, 2. Try CEGAL policy, 3. Quit\nInput your selection:\n')
             if n == '1':
+		file = open('./data/log', 'a')
+		file.write('\nTest AL policy\n')
+                file.close()
                 policy = opt_['policy'].copy()
             elif n == '2':
+		file = open('./data/log', 'a')
+		file.write('\nTest CEGAL policy\n')
+                file.close()
                 policy = opt['policy'].copy()
             elif n == '3':
                 break
@@ -369,9 +379,9 @@ class mountaincar(grids, object):
                 test = raw_input('\n1. Play learnt policy visually\n\
 2. Run policy to collect statistical data\n3. Store policy\n4. Quit\nInput the selection:\n')
                 if test == '1':
-                    self.episode(policy, steps = steps)
+                    self.episode(policy = policy, steps = steps)
                 elif test == '2':
-                    self.test(policy)
+                    self.test(policy = policy)
                 elif test == '3':
                     if n == '1':
                         self.write_policy_file(policy = policy, path = './data/policy_mountaincar')
@@ -396,26 +406,17 @@ class mountaincar(grids, object):
         ## cegal.iteration returns SAAL and AL learning results
         ## opt = (diff, theta, policy, mu)
 
-        print("\n\n\nLearning result for safety specification:\n")
+        print("\nLearning result for safety specification:\n")
         print("\nP<=" + str(safety) + " [U<= 66 (position < -1.1 && velocity < -0.04)||(position > 0.5 && velocity > 0.04)]\n")
-
-        print("\n>>>>>>>>Apprenticeship Learning learnt policy weight vector:")
-        print(opt_['theta'])
-        print("\nFeature vector margin: %f" % opt_['diff'])
-        print("\nPRISM model checking result: %f\n" % opt_['prob'])
 
         print("\n>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy weight vector:")
         print(opt['theta'])
         print("\nFeature vector margin: %f" % opt['diff'])
         print("\nPRISM model checking result: %f\n" % opt['prob'])
         
-        file = open('./data/log', 'w')
+        file = open('./data/log', 'a')
         file.write("\n\n\nLearning result for safety specification:\n")
         file.write("\nP<=" + str(safety) + " [U<= 66 (position < -1.1 && velocity < -0.04)||(position > 0.5 && velocity > 0.04)]\n")
-
-        file.write("\n>>>>>>>>Apprenticeship Learning learnt policy")
-        #print("\nFeature vector margin: %f" % opt_['diff'])
-        file.write("\nPRISM model checking result: %f\n" % opt_['prob'])
 
         file.write("\n>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy")
         #print("\nFeature vector margin: %f" % opt['diff'])
@@ -629,7 +630,8 @@ if __name__ == "__main__":
 
     #mountaincar.run_tool_box() 
     mountaincar.build_MDP_from_file()
-
+    mountaincar.read_policy_file(path = './data/policy_mountaincar_0.2')
+    mountaincar.test(mountaincar.M.policy)
     opt = mountaincar.learn_from_demo_file()
     safety = (int(opt['prob'] * 10) - 1)/10.0
     safety = 0.2

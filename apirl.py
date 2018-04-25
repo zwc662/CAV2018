@@ -13,13 +13,17 @@ from mdp import mdp
 solvers.options['show_progress'] = False
 
 class apirl():
-    def __init__(self, M = None, theta = None, max_iter = 30):
+    def __init__(self, M = None, theta = None, max_iter = 30, epsilon = None):
         self.M = M
         if theta is not None:
             self.theta = theta.copy()
         self.exp_mu = None
         if max_iter is not None:
             self.max_iter = max_iter
+	if epsilon is None:
+            self.epsilon = self.M.epsilon
+	else:
+	    self.epsilon = epsilon
     
     def read_demo_file(self, paths):
         exp_mu = np.zeros(self.M.features[0].shape)
@@ -159,10 +163,10 @@ class apirl():
         print("\n>>>>>>>>APIRL iteration start, learn from:")
         print(exp_mu)
         print(">>>>>>>>>>Max iteration number: %d" % self.max_iter)
-        print(">>>>>>>>>>epsilon: %f" % self.M.epsilon)
+        print(">>>>>>>>>>epsilon: %f" % self.epsilon)
         while True:
             print("\n>>>>>>>>>Iteration %d" % itr)
-            if diff <= self.M.epsilon:
+            if diff <= self.epsilon:
                 print(">>>>>>>>>>>Converge<<<<<<<<<<\
                         epsilon-close policy found" % diff)
                 break
@@ -170,9 +174,9 @@ class apirl():
             if itr >= self.max_iter:      
                 print("Reached maximum iteration. Return best learnt policy.")
                 break
-            if abs(diff - diff_) < self.M.epsilon:
-                print("Reached local optimum. End iteration")
-                break
+            #if abs(diff - diff_) < self.M.epsilon:
+            #    print("Reached local optimum. End iteration")
+            #    break
             diff_ = diff
 
             itr += 1
@@ -201,10 +205,14 @@ class apirl():
                         'mu':mu.copy()} 
         	print("Update best learnt policy")
 
-        if diff <= self.M.epsilon:
+        if diff <= self.epsilon:
             print("\n<<<<<<epsilon-close policy is found. APIRL finished")
         else:
             print("\n<<<<<<Can't find espsilon-close policy. APIRL stop")
+
+	file = open('./data/log', 'a')
+	file.write("\nAL ends after " + str(itr) + " iterations\n")
+	file.close()
 
         print("Optimal policy weight vector:")
         print(opt['theta'])
