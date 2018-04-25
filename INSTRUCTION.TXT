@@ -5,6 +5,8 @@ This is the artifact for paper 'Safety-Aware Apprenticeship Learning' which has 
 All three experiments in the paper can be implemented by using this artifact. 
 The data in Table 2 and Table 3 can be recovered by using this artifact.
 
+User can check the markdown version of the instruction in https://github.com/zwc662/CAV2018/blob/master/README.md.
+
 Basics
 =======
 
@@ -24,6 +26,8 @@ policy while satisfing the safety specification can be learnt.
 
 Installation
 ============
+Please check the link in the file ``master/CAV2018_OVA`` and download the OVA file via the link.
+
 There is no other installation except loading the OVA file to a Virtualbox. The artifact runs on a Ubuntu 16.04 OS with 4 cores 8 threads 3.6GHz CPU, 8GB RAM and 32GB storage size. When configuring the Virtual Machine, recommand using 4 CPUs, 8G ram and more than 32GB storage size.
 
 Please login 'cav2018' with password 'cav2018' and enter the directory '/home/cav2018/CAV2018/'.
@@ -132,36 +136,36 @@ The file named 'log' in ./data folder records the model checking results and sta
 
 Please refer to the example below:
 
-"
-Time Stamp: [2018, 4, 15, 8, 20, 29]
-Experiment: cartpole
+		"
+		Time Stamp: [2018, 4, 15, 8, 20, 29]
+		Experiment: cartpole
 
-AL ends after 2 iterations
+		AL ends after 2 iterations
 
->>>>>>>>Apprenticeship Learning learns a policy.
+		>>>>>>>>Apprenticeship Learning learns a policy.
 
-Given safety spec:
-P=? [U<= 200 ((position < -0.3 && angle < -20)||(position > 0.3 && angle > 20))]
+		Given safety spec:
+		P=? [U<= 200 ((position < -0.3 && angle < -20)||(position > 0.3 && angle > 20))]
 
-PRISM model checking the probability of reaching the unsafe states: 0.491358
+		PRISM model checking the probability of reaching the unsafe states: 0.491358
 
-AL ends after 50 iterations
+		AL ends after 50 iterations
 
-CEGAL ends in 22 iterations
+		CEGAL ends in 22 iterations
 
 
 
-Learning result for safety specification:
+		Learning result for safety specification:
 
-P<=0.1 [U<= 200 ((position < -0.3 && angle < -20)||(position > 0.3 && angle > 20))]
+		P<=0.1 [U<= 200 ((position < -0.3 && angle < -20)||(position > 0.3 && angle > 20))]
 
->>>>>>>>Safety-Aware Apprenticeship Learning
-PRISM model checking result: 0.071744
+		>>>>>>>>Safety-Aware Apprenticeship Learning
+		PRISM model checking result: 0.071744
 
-Test CEGAL policy
-Unsafe Rate: 80.90%
-Average Step: 159
-"
+		Test CEGAL policy
+		Unsafe Rate: 80.90%
+		Average Step: 159
+		"
 
 Note:
 1. Experiments all begin with a timestamp and experiment name as in the example, i.e. 
@@ -184,9 +188,9 @@ Note:
 
 As well as the model checking result as above. The 'AL ends after 50 iterations...' below 'PRISM model checking the...', is used to generate the initial counterexample for CEGAL. Please ignore this message since epsilon will be temporarily set to 1E-5 for it. And under this small epsilon AL will always run for 50 iterations(max iteration) before it ends. The data in the paper is consistent with the first record of AL, including iteration number and model checking results. Please identify them in the log file.
 
-4. There may be slight variation between the result in log file and the data in the paper. This is largely due to the randomization in the algorithm. It is normal that differences in number of iterations, average step length are less than 3. However, if serious inconsistency happens, please run the program for at least one more time.
+4. There may be inconsistency between the results in log file and the data in the paper. This is largely due to the randomization in the algorithm. Some optimization in using third-party tools in the program can also lead to variation. For instance, there is a time limit for COMICS to generate counterexample. If it fails to ouput in 2s, then p* is by half so that COMICS can enumerate less counterexample paths. However, the runtime of COMICS can be affected by the condition of the system, e.g. for the same p*, COMICS may fail to output in 2s when CPU is busy whereas manage to output in less than 1s when CPU is not busy. Different counterexample can largely influence the final result. It is normal that differences in number of iterations, average step length are less than 3. However, if serious inconsistency happens, please run the program for at least one more time. 
 
-5. The data in the paper uses the precision of one decimal. Don't recommend user to try the p*=0.0% because the safest policy may has less than 0.1% unsafe probability. 
+5. The data in the paper uses the precision of one decimal. We don't recommend user to try the p*=0.0% because the safest policy may has less than 0.1% unsafe probability. 
 
 Error report
 ============
