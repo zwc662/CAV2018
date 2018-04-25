@@ -1,11 +1,13 @@
 Safety-Aware Apprenticeship Learning
 ======= 
 
-This is the instruction for the artifact for paper 'Safety-Aware Apprenticeship Learning' which has been accepted by CAV2018. 
+This is the instruction for the artifact for paper 'Safety-Aware Apprenticeship Learning' which has been accepted by CAV2018.
+
 All three experiments in the paper can be implemented by using this artifact. 
 The data in Table 2 and Table 3 can be recovered by using this artifact.
 
 User can also check the markdown version of this instruction in https://github.com/zwc662/CAV2018/blob/master/README.md.
+
 
 Basics
 =======
@@ -28,7 +30,9 @@ Installation
 ============
 Please check the link in the file ``master/CAV2018_OVA`` and download the OVA file via the link.
 
-There is no other installation except loading the OVA file to a Virtualbox. The artifact runs on a Ubuntu 16.04 OS with 4 cores 8 threads 3.6GHz CPU, 8GB RAM and 32GB storage size. When configuring the Virtual Machine, recommand using 4 CPUs, 8G ram and more than 32GB storage size.
+There is no other installation except loading the OVA file to a Virtualbox. The artifact runs on a Ubuntu 16.04 OS with 4 cores 8
+threads 3.6GHz CPU, 8GB RAM and 32GB storage size. When configuring the Virtual Machine, recommand using 4 CPUs, 8G ram and more
+than 32GB storage size.
 
 Please login 'cav2018' with password 'cav2018' and enter the directory '/home/cav2018/CAV2018/'.
 
@@ -53,17 +57,35 @@ gridworld
 ---------
 Firstly input an integer by following the prompt to decide the dimension for the nxn gridworld. If press Enter without inputing any integer, the default value 8 will be used.
 
-After deciding the dimension, a figure of gridworld with predetermined reward mapping will be generated. As described in the paper, there are 2 goal states with highest rewards and 2 darkest states with lowest rewards. Including the 2 darkest states, the areas surrounded by red lines are all unsafe states. Close the figure window and choose '1' to demonstrate by hand or '2' to use provided demonstrations. If having chosen to demonstrate by hand, please input 'Y' when asked whether to start human demonstration. Please try to avoid crossing the red line and thus reaching the unsafe states. Press 0~4 in the terminal to select action in each time step: ``0. stay, 1. go right, 2. go down, 3. go up, 4. go left`` to go to the goal states. Because of stochasticity, there is probability that the agent doesn't go in the same direction as the action, except for ``0. stay``, which means staying in the current state and ending the episode. The maximum step length in one single episode is upperbounded by n^2. User can demonstrate as many episodes as needed. Please follow the prompt to choose whether to start the next episode or end the demonstration phase. While human demonstrating, the generated paths are stored in a plain text file. 
+After deciding the dimension, a figure of gridworld with predetermined reward mapping will be generated. As described in the
+paper, there are 2 goal states with highest rewards and 2 darkest states with lowest rewards. Including the 2 darkest states, the 
+areas surrounded by red lines are all unsafe states. Close the figure window and choose '1' to demonstrate by hand or '2' to use
+provided demonstrations. If having chosen to demonstrate by hand, please input 'Y' when asked whether to start human 
+demonstration. Please try to avoid crossing the red line and thus reaching the unsafe states. Press 0~4 in the terminal to select 
+action in each time step: ``0. stay, 1. go right, 2. go down, 3. go up, 4. go left`` to go to the goal states. Because of 
+stochasticity, there is probability that the agent doesn't go in the same direction as the action, except for ``0. stay``, which
+means staying in the current state and ending the episode. The maximum step length in one single episode is upperbounded by n^2.
+User can demonstrate as many episodes as needed. Please follow the prompt to choose whether to start the next episode or end the 
+demonstration phase. While human demonstrating, the generated paths are stored in a plain text file. 
 
-Once human expert want to stop providing any episode of demonstration, please press 'N' when asked whether to start demonstration. Then follow the prompt to start apprenticeship learning. After reading demonstrations from the plain text, apprenticeship learning will start the iterations. In the end, a policy will be output and a new gridworld figure will be generated. The gray scale of each cell implies the reward mapping of which the output policy is optimal. One can compare it with the original reward mapping. Close the image window and a report will be ouput on the command line. Note that model checking will be implemented on the policy to show the probability of reaching either unsafe state within n^2 steps. The PCTL formulation is: 
+Once human expert want to stop providing any episode of demonstration, please press 'N' when asked whether to start 
+demonstration. Then follow the prompt to start apprenticeship learning. After reading demonstrations from the plain text,
+apprenticeship learning will start the iterations. In the end, a policy will be output and a new gridworld figure will be 
+generated. The gray scale of each cell implies the reward mapping of which the output policy is optimal. One can compare it with 
+the original reward mapping. Close the image window and a report will be ouput on the command line. Note that model checking will 
+be implemented on the policy to show the probability of reaching either unsafe state within n^2 steps. The PCTL formulation is: 
 
 ``P=? [ true U<=n^2 'unsafe']``. 
 
-The next step is to implement Safety-Aware Apprenticeship Learning algorithm. According to the model checking result, user can decide the safety threshold p* for the safety specification:
+The next step is to implement Safety-Aware Apprenticeship Learning algorithm. According to the model checking result, user can 
+decide the safety threshold p* for the safety specification:
 
 ``P<=p* [ true U<=n^2 'unsafe']`` 
 
-Please input a value for p* and start the algorithm. After certain amount of iterations, a new policy will be output. This policy is guaranteed to satisfy the specification above. As for the reward mapping of which the learnt policy is optimal, please follow the prompt to select and compare the reward mappings learnt either via Apprenticeship Learning or via Safety-Aware Apprenticeship Learning. 
+Please input a value for p* and start the algorithm. After certain amount of iterations, a new policy will be output. This policy 
+is guaranteed to satisfy the specification above. As for the reward mapping of which the learnt policy is optimal, please follow 
+the prompt to select and compare the reward mappings learnt either via Apprenticeship Learning or via Safety-Aware Apprenticeship 
+Learning. 
 
 Cartpole
 ---------
