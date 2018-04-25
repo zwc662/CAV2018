@@ -274,7 +274,8 @@ may has less than 0.1% unsafe probability.
 
 Error report
 ============
-1. It's very common to see error report in the prompt when running the policy, such as 'No counterexample found ...'. If the program doesn't exit by itself, please don't stop it by hand.
+1. It's very common to see error report in the prompt when running the policy, such as 'No counterexample found ...'. If the 
+program doesn't exit by itself, please don't stop it by hand.
  
 
 
