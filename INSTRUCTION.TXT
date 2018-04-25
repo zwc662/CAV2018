@@ -269,8 +269,8 @@ the program can also lead to unstability. For instance, there is a time limit fo
 affected by the condition of the system, e.g. for the same p*, COMICS may fail to output in 2s when CPU is busy whereas manage to
 output in less than 1s when CPU is not busy. Different counterexample can largely influence the final result. It is normal that 
 differences in number of iterations, average step length between the data in log file and results in the paer are less than 10,
-i.e. variation in [-10, +10] should be acceptable. However, if serious inconsistency happens, please run the program for at least 
-one more time.
+i.e. variation in [-10, +10] should be acceptable. However, if serious inconsistency happens, please reboot the virtual machine
+and run the program for at least one more time.
 
 5. The data in the paper uses the precision of one decimal. We don't recommend user to try the p*=0.0% because the safest policy 
 may has less than 0.1% unsafe probability. 
