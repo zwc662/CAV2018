@@ -172,8 +172,11 @@ Note:
 			 Experiment: cartpole'
 
 2. a. 'PRISM model checking .....: XXX' in log file corresponds to 'MC Result' in the paper.
+
    b. 'AL ends after XXX iterations' in log file corresonds to 'Num. of Iters' for AL.
+   
    c. 'CEGAL ends after XXX iterations' in log file corresponds to 'Num. of Iters' for CEGAL.
+   
    d. 'Average step length: XXXX' in log file corresonds to 'Avg. Steps'.
 
 3. As can be seen in the example, in each experiment, there are two records for AL. When comparing to the paper, please check the iteration number of AL right above ">>>>>>>>Apprenticeship Learning learns a policy.", i.e. 
