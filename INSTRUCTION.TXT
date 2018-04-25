@@ -55,7 +55,8 @@ Please input an index to select the experiment environment.
 
 gridworld
 ---------
-Firstly input an integer by following the prompt to decide the dimension for the nxn gridworld. If press Enter without inputing any integer, the default value 8 will be used.
+Firstly input an integer by following the prompt to decide the dimension for the nxn gridworld. If press Enter without inputing 
+any integer, the default value 8 will be used.
 
 After deciding the dimension, a figure of gridworld with predetermined reward mapping will be generated. As described in the
 paper, there are 2 goal states with highest rewards and 2 darkest states with lowest rewards. Including the 2 darkest states, the
