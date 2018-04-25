@@ -1,11 +1,11 @@
 Safety-Aware Apprenticeship Learning
 ======= 
 
-This is the artifact for paper 'Safety-Aware Apprenticeship Learning' which has been accepted by CAV2018. 
+This is the instruction for the artifact for paper 'Safety-Aware Apprenticeship Learning' which has been accepted by CAV2018. 
 All three experiments in the paper can be implemented by using this artifact. 
 The data in Table 2 and Table 3 can be recovered by using this artifact.
 
-User can check the markdown version of the instruction in https://github.com/zwc662/CAV2018/blob/master/README.md.
+User can also check the markdown version of this instruction in https://github.com/zwc662/CAV2018/blob/master/README.md.
 
 Basics
 =======
