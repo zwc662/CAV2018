@@ -90,7 +90,9 @@ Cartpole
 ---------
 Cartpole is the second environment. The detail about this environment can be found in https://github.com/openai/gym/wiki/CartPole-v0.
 
-The unsafe situation is defined as ``(position<-0.3 && angle<-20)||(position>0.3 && angle>20)``. The abstraction of the environment and the expert demonstration has already been generated. As described in the paper, all episodes achieve the maximum
+The unsafe situation is defined as ``(position<-0.3 && angle<-20)||(position>0.3 && angle>20)``. 
+The abstraction of the environment and the expert demonstration has already been generated. As described in the paper, all 
+episodes achieve the maximum
 step length 200 while none of the episodes reaches the unsafe situation. 
 
 Firstly, please follow the prompt to run apprenticeship learning. Like the gridworld, in the end, model checking will be 
