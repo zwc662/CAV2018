@@ -17,7 +17,9 @@ def play_gridworld():
     t = raw_input('\nDemonstrate by hand?[Y\N]')
     if t == 'Y' or t == 'y':
         grids.learn_from_human_demo(steps = dim**2)
-        
+    else:
+        os.system('cp ./data/demo_gridworld_ ./data/demo_gridworld')
+        grids.learn_from_demo_file()
     print('\n#######Please input the safety threshold p* for the safety specification below.\nP <= p* [U<=' + str(dim**2) + " 'unsafe']\n")
     safety = raw_input("\nPlease input p*=?\n")
     safety = float(safety)
