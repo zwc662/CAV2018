@@ -407,15 +407,13 @@ if __name__ == "__main__":
     cartpole = cartpole()
     #cartpole.run_tool_box()
     cartpole.build_MDP_from_file()
-    '''
 
     opt = cartpole.learn_from_demo_file()
         
     safety = opt['prob']
     safety = int(safety * 10) - 1
     safety = safety/10.0
-    '''
-    safety = 0.10
+    safety = 0.05
     
     cartpole.synthesize_from_demo_file(safety = safety, steps = 200)
 

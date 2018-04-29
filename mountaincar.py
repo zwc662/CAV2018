@@ -359,7 +359,8 @@ class mountaincar(grids, object):
 
         opt, opt_ = self.synthesize(learn = learn, exp_mu = exp_mu, safety = safety, steps = steps)
         while True:
-            n = raw_input('\n1. Try AL policy, 2. Try CEGAL policy, 3. Quit\nInput your selection:\n')
+            #n = raw_input('\n1. Try AL policy, 2. Try CEGAL policy, 3. Quit\nInput your selection:\n')
+            n = '2'
             if n == '1':
 		file = open('./data/log', 'a')
 		file.write('\nTest AL policy\n')
@@ -376,12 +377,14 @@ class mountaincar(grids, object):
                 print("Invalid")
                 continue
             while True:
-                test = raw_input('\n1. Play learnt policy visually\n\
-2. Run policy to collect statistical data\n3. Store policy\n4. Quit\nInput the selection:\n')
+                #test = raw_input('\n1. Play learnt policy visually\n\
+#2. Run policy to collect statistical data\n3. Store policy\n4. Quit\nInput the selection:\n')
+                test = '2'
                 if test == '1':
                     self.episode(policy = policy, steps = steps)
                 elif test == '2':
                     self.test(policy = policy)
+                    break
                 elif test == '3':
                     if n == '1':
                         self.write_policy_file(policy = policy, path = './data/policy_mountaincar')
@@ -391,7 +394,7 @@ class mountaincar(grids, object):
                     break
                 else:
                     print("Invalid input")
-             
+            break
         return opt, opt_ 
 
     def synthesize(self, learn, exp_mu, opt = None, safety = None, steps = None):
@@ -424,7 +427,6 @@ class mountaincar(grids, object):
         file.close()
 
         return opt, opt_
-    """	
     def run_tool_box(self):
 
         paths = []
@@ -607,7 +609,6 @@ class mountaincar(grids, object):
                             + str(path[t][2]) + ' '
                             + str(path[t][3]) + '\n')
         file.close()
-    """
 
     def model_check(self, policy, safety = None, steps = None):
         if steps is None:
@@ -630,12 +631,11 @@ if __name__ == "__main__":
 
     #mountaincar.run_tool_box() 
     mountaincar.build_MDP_from_file()
-    mountaincar.read_policy_file(path = './data/policy_mountaincar_0.2')
-    mountaincar.test(mountaincar.M.policy)
+    #mountaincar.read_policy_file(path = './data/policy_mountaincar_0.2')
+    #mountaincar.test(mountaincar.M.policy)
     opt = mountaincar.learn_from_demo_file()
     safety = (int(opt['prob'] * 10) - 1)/10.0
-    safety = 0.2
- 
 
-    mountaincar.synthesize_from_demo_file(safety)
+    for i in [0.5, 0.4, 0.3, 0.2]:
+        mountaincar.synthesize_from_demo_file(i)
 

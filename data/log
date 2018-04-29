@@ -1,0 +1,1141 @@
+
+
+
+
+Time Stamp: [2018, 04, 24, 22, 04, 07]
+
+Experiment: cartpole
+
+AL ends after 2 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy.
+
+Given safety spec:
+P=? [U<= 200 ((position < -0.3 && angle < -20)||(position > 0.3 && angle > 20))]
+
+PRISM model checking the probability of reaching the unsafe states: 0.491358
+
+
+
+
+Time Stamp: [2018, 04, 24, 22, 05, 13]
+
+Experiment: cartpole
+
+AL ends after 2 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy.
+
+Given safety spec:
+P=? [U<= 200 ((position < -0.3 && angle < -20)||(position > 0.3 && angle > 20))]
+
+PRISM model checking the probability of reaching the unsafe states: 0.491358
+
+AL ends after 50 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy.
+Given safety spec:
+P=? [U<= 66 ((position < -1.1 && velocity < -0.04)||(position > 0.5 && velocity > 0.04))]
+
+PRISM model checking the probability of reaching the unsafe states: 0.692414
+
+Test AL policy
+Unsafe ratio: 1.000000
+Average step length: 54.594000
+
+AL ends after 50 iterations
+
+CEGAL ends in 9 iterations
+
+
+
+Learning result for safety specification:
+
+P<=0.6 [U<= 66 (position < -1.1 && velocity < -0.04)||(position > 0.5 && velocity > 0.04)]
+
+>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy
+PRISM model checking result: 0.434250
+
+AL ends after 50 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy.
+Given safety spec:
+P=? [U<= 66 ((position < -1.1 && velocity < -0.04)||(position > 0.5 && velocity > 0.04))]
+
+PRISM model checking the probability of reaching the unsafe states: 0.692414
+
+Test AL policy
+Unsafe ratio: 1.000000
+Average step length: 54.638000
+
+AL ends after 50 iterations
+
+CEGAL ends in 9 iterations
+
+
+
+Learning result for safety specification:
+
+P<=0.6 [U<= 66 (position < -1.1 && velocity < -0.04)||(position > 0.5 && velocity > 0.04)]
+
+>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy
+PRISM model checking result: 0.434250
+
+Test CEGAL policy
+Unsafe ratio: 0.356000
+Average step length: 57.526000
+Unsafe ratio: 0.372000
+Average step length: 57.157000
+Unsafe ratio: 0.355000
+Average step length: 57.298000
+Unsafe ratio: 0.349000
+Average step length: 57.643000
+Unsafe ratio: 0.370000
+Average step length: 57.271000
+Unsafe ratio: 0.353000
+Average step length: 57.269000
+Unsafe ratio: 0.322000
+Average step length: 57.991000
+Unsafe ratio: 0.352000
+Average step length: 57.544000
+Unsafe ratio: 0.307000
+Average step length: 57.277000
+Unsafe ratio: 0.312000
+Average step length: 57.660000
+Unsafe ratio: 0.326000
+Average step length: 58.372000
+
+AL ends after 50 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy.
+Given safety spec:
+P=? [U<= 66 ((position < -1.1 && velocity < -0.04)||(position > 0.5 && velocity > 0.04))]
+
+PRISM model checking the probability of reaching the unsafe states: 0.692414
+
+AL ends after 50 iterations
+
+CEGAL ends in 17 iterations
+
+
+
+Learning result for safety specification:
+
+P<=0.5 [U<= 66 (position < -1.1 && velocity < -0.04)||(position > 0.5 && velocity > 0.04)]
+
+>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy
+PRISM model checking result: 0.472393
+
+Test CEGAL policy
+Unsafe ratio: 0.314000
+Average step length: 56.011000
+
+AL ends after 50 iterations
+
+CEGAL ends in 26 iterations
+
+
+
+Learning result for safety specification:
+
+P<=0.4 [U<= 66 (position < -1.1 && velocity < -0.04)||(position > 0.5 && velocity > 0.04)]
+
+>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy
+PRISM model checking result: 0.293046
+
+Test CEGAL policy
+Unsafe ratio: 0.004000
+Average step length: 61.590000
+
+AL ends after 50 iterations
+
+CEGAL ends in 17 iterations
+
+
+
+Learning result for safety specification:
+
+P<=0.3 [U<= 66 (position < -1.1 && velocity < -0.04)||(position > 0.5 && velocity > 0.04)]
+
+>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy
+PRISM model checking result: 0.188893
+
+Test CEGAL policy
+Unsafe ratio: 0.000000
+Average step length: 64.332000
+
+AL ends after 50 iterations
+
+CEGAL ends in 40 iterations
+
+
+
+Learning result for safety specification:
+
+P<=0.2 [U<= 66 (position < -1.1 && velocity < -0.04)||(position > 0.5 && velocity > 0.04)]
+
+>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy
+PRISM model checking result: 0.049164
+
+Test CEGAL policy
+Unsafe ratio: 0.000000
+Average step length: 66.000000
+
+AL ends after 2 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy.
+
+Given safety spec:
+P=? [U<= 200 ((position < -0.3 && angle < -20)||(position > 0.3 && angle > 20))]
+
+PRISM model checking the probability of reaching the unsafe states: 0.491358
+
+AL ends after 50 iterations
+
+CEGAL ends in 39 iterations
+
+
+
+Learning result for safety specification:
+
+P<=0.05 [U<= 200 ((position < -0.3 && angle < -20)||(position > 0.3 && angle > 20))]
+
+>>>>>>>>Safety-Aware Apprenticeship Learning
+PRISM model checking result: 0.028006
+
+Test CEGAL policy
+Unsafe ratio: 0.003000
+Average step length: 90.000000
+
+
+
+
+Time Stamp: [2018, 04, 24, 22, 58, 32]
+
+Experiment: cartpole
+
+AL ends after 2 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy.
+
+Given safety spec:
+P=? [U<= 200 ((position < -0.3 && angle < -20)||(position > 0.3 && angle > 20))]
+
+PRISM model checking the probability of reaching the unsafe states: 0.491358
+
+AL ends after 50 iterations
+
+CEGAL ends in 50 iterations
+
+
+
+Learning result for safety specification:
+
+P<=0.05 [U<= 200 ((position < -0.3 && angle < -20)||(position > 0.3 && angle > 20))]
+
+>>>>>>>>Safety-Aware Apprenticeship Learning
+PRISM model checking result: 0.038343
+
+Test CEGAL policy
+Unsafe ratio: 0.003000
+Average step length: 83.000000
+
+
+
+
+Time Stamp: [2018, 04, 24, 23, 58, 43]
+
+Experiment: mountaincar
+
+
+
+
+Time Stamp: [2018, 04, 24, 23, 58, 46]
+
+Experiment: cartpole
+
+AL ends after 2 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy.
+
+Given safety spec:
+P=? [U<= 200 ((position < -0.3 && angle < -20)||(position > 0.3 && angle > 20))]
+
+PRISM model checking the probability of reaching the unsafe states: 0.491358
+
+AL ends after 50 iterations
+
+CEGAL ends in 22 iterations
+
+
+
+Learning result for safety specification:
+
+P<=0.15 [U<= 200 ((position < -0.3 && angle < -20)||(position > 0.3 && angle > 20))]
+
+>>>>>>>>Safety-Aware Apprenticeship Learning
+PRISM model checking result: 0.069023
+
+Test CEGAL policy
+Unsafe ratio: 0.056000
+Average step length: 117.000000
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.826042
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.950492
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.999809
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.999809
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.826042
+
+AL ends after 30 iterations
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.826717
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.826042
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.826042
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.826042
+
+AL ends after 30 iterations
+
+CEGAL ends in 30 iterations
+
+
+
+Learning result for safety specification:
+
+P<=0.2[true U<=64 'unsafe']
+
+>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy
+PRISM model checking result: 0.190315
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.187705
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.994038
+
+AL ends after 30 iterations
+
+CEGAL ends in 30 iterations
+
+
+
+Learning result for safety specification:
+
+P<=0.2[true U<=64 'unsafe']
+
+>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy
+PRISM model checking result: 0.190315
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.000000
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.826042
+
+AL ends after 30 iterations
+
+CEGAL ends in 30 iterations
+
+
+
+Learning result for safety specification:
+
+P<=0.2[true U<=64 'unsafe']
+
+>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy
+PRISM model checking result: 0.190315
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.000000
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.190006
+
+AL ends after 30 iterations
+
+
+
+Learning result for safety specification:
+
+P<=0.2[true U<=64 'unsafe']
+
+>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy
+PRISM model checking result: 0.190006
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.000000
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.988508
+
+AL ends after 30 iterations
+
+CEGAL ends in 30 iterations
+
+
+
+Learning result for safety specification:
+
+P<=0.2[true U<=64 'unsafe']
+
+>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy
+PRISM model checking result: 0.190315
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.000000
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.826042
+
+AL ends after 30 iterations
+
+CEGAL ends in 30 iterations
+
+
+
+Learning result for safety specification:
+
+P<=0.2[true U<=64 'unsafe']
+
+>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy
+PRISM model checking result: 0.190315
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.000000
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.826042
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.000000
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.826042
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.000000
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.826042
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.826697
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.826042
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.826042
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.826042
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.816863
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.826042
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.816863
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.004503
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.772606
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.723748
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 1.000000
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.997520
+
+AL ends after 30 iterations
+
+CEGAL ends in 30 iterations
+
+
+
+Learning result for safety specification:
+
+P<=0.2[true U<=64 'unsafe']
+
+>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy
+PRISM model checking result: 0.000000
+
+AL ends after 30 iterations
+
+CEGAL ends in 30 iterations
+
+
+
+Learning result for safety specification:
+
+P<=0.4[true U<=64 'unsafe']
+
+>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy
+PRISM model checking result: 0.329260
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.329260
+
+AL ends after 30 iterations
+
+CEGAL ends in 30 iterations
+
+
+
+Learning result for safety specification:
+
+P<=0.2[true U<=64 'unsafe']
+
+>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy
+PRISM model checking result: 0.190315
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.295255
+
+AL ends after 30 iterations
+
+CEGAL ends in 30 iterations
+
+
+
+Learning result for safety specification:
+
+P<=0.2[true U<=64 'unsafe']
+
+>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy
+PRISM model checking result: 0.190218
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.295255
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.816863
+
+AL ends after 30 iterations
+
+CEGAL ends in 30 iterations
+
+
+
+Learning result for safety specification:
+
+P<=0.2[true U<=64 'unsafe']
+
+>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy
+PRISM model checking result: 0.190218
+
+AL ends after 30 iterations
+
+CEGAL ends in 30 iterations
+
+
+
+Learning result for safety specification:
+
+P<=0.2[true U<=64 'unsafe']
+
+>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy
+PRISM model checking result: 0.000000
+
+AL ends after 30 iterations
+
+CEGAL ends in 30 iterations
+
+
+
+Learning result for safety specification:
+
+P<=0.2[true U<=64 'unsafe']
+
+>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy
+PRISM model checking result: 0.000000
+
+AL ends after 30 iterations
+
+CEGAL ends in 30 iterations
+
+
+
+Learning result for safety specification:
+
+P<=0.4[true U<=64 'unsafe']
+
+>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy
+PRISM model checking result: 0.357273
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.895579
+
+AL ends after 30 iterations
+
+CEGAL ends in 30 iterations
+
+
+
+Learning result for safety specification:
+
+P<=0.4[true U<=64 'unsafe']
+
+>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy
+PRISM model checking result: 0.000000
+
+AL ends after 30 iterations
+
+CEGAL ends in 30 iterations
+
+
+
+Learning result for safety specification:
+
+P<=0.5[true U<=64 'unsafe']
+
+>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy
+PRISM model checking result: 0.420956
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.951362
+
+AL ends after 30 iterations
+
+CEGAL ends in 30 iterations
+
+
+
+Learning result for safety specification:
+
+P<=0.2[true U<=64 'unsafe']
+
+>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy
+PRISM model checking result: 0.190218
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.245556
+
+AL ends after 30 iterations
+
+CEGAL ends in 30 iterations
+
+
+
+Learning result for safety specification:
+
+P<=0.2[true U<=64 'unsafe']
+
+>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy
+PRISM model checking result: 0.190218
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.187705
+
+AL ends after 30 iterations
+
+CEGAL ends in 30 iterations
+
+
+
+Learning result for safety specification:
+
+P<=0.2[true U<=64 'unsafe']
+
+>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy
+PRISM model checking result: 0.190218
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.295255
+
+AL ends after 30 iterations
+
+CEGAL ends in 30 iterations
+
+
+
+Learning result for safety specification:
+
+P<=0.2[true U<=64 'unsafe']
+
+>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy
+PRISM model checking result: 0.190218
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.295255
+
+AL ends after 30 iterations
+
+CEGAL ends in 30 iterations
+
+
+
+Learning result for safety specification:
+
+P<=0.2[true U<=64 'unsafe']
+
+>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy
+PRISM model checking result: 0.190218
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.187705
+
+AL ends after 30 iterations
+
+CEGAL ends in 30 iterations
+
+
+
+Learning result for safety specification:
+
+P<=0.2[true U<=64 'unsafe']
+
+>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy
+PRISM model checking result: 0.190218
+
+AL ends after 30 iterations
+
+CEGAL ends in 30 iterations
+
+
+
+Learning result for safety specification:
+
+P<=0.2[true U<=64 'unsafe']
+
+>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy
+PRISM model checking result: 0.190218
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.187705
+
+AL ends after 30 iterations
+
+CEGAL ends in 30 iterations
+
+
+
+Learning result for safety specification:
+
+P<=0.2[true U<=64 'unsafe']
+
+>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy
+PRISM model checking result: 0.190218
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.816863
+
+AL ends after 30 iterations
+
+CEGAL ends in 30 iterations
+
+
+
+Learning result for safety specification:
+
+P<=0.2[true U<=64 'unsafe']
+
+>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy
+PRISM model checking result: 0.190218
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.826697
+
+AL ends after 30 iterations
+
+CEGAL ends in 30 iterations
+
+
+
+Learning result for safety specification:
+
+P<=0.2[true U<=64 'unsafe']
+
+>>>>>>>>Safety-Aware Apprenticeship Learning learnt policy
+PRISM model checking result: 0.190218
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.826697
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.816863
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.295255
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.895579
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.833754
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.245556
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.826697

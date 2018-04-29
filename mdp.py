@@ -279,7 +279,14 @@ class mdp():
         file.close()
 
     def move(self, state, action):
+            
         prob = random.random()
+        if state == int(self.S[-2]):
+            for s in self.starts:
+                prob -= self.T[action][state, s]
+                if prob <= 0:
+                    return s
+            return self.starts[0]
         for s in self.S:
             prob -= self.T[action][state, s]
             if prob <= 0:

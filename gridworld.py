@@ -142,6 +142,9 @@ class gridworld(grids, object):
                     if s == self.M.S[-1]:
                         self.M.T[a][s, s] = 1.0
                         break
+                    if s == self.M.S[-2]:
+                        self.M.T[a][s, 0] = 1.0
+                        break
                     if a == 0:
                         self.M.T[a][s, s] = 1.0
                         continue
@@ -269,7 +272,7 @@ class gridworld(grids, object):
                     state = state_
 
 	    except:
-		print("Invalid action, input again")
+		print("Error happens")
 		next
         if steps == 0:
             print("Reached maximum step length")
@@ -285,29 +288,58 @@ class gridworld(grids, object):
 
         
     def policy_simulation(self, policy = None, max_iter = 10000):
+        os.system('rm ./data/demo_gridworld_')
         if policy is None:
             policy = self.M.policy
 
+        unsafes = np.zeros([len(self.M.S)]).astype(bool)
+        for u in self.M.unsafes:
+            unsafes[u] = True
+        targets = np.zeros([len(self.M.S)]).astype(bool)
+        for t in self.M.targets:
+            targets[t] = True
+        
         exp_mu = np.zeros((len(self.M.features[0])))
         diff = float('inf')
-        itr = 0
-        while diff > self.M.epsilon and itr < max_iter:
-            exp_mu_ = exp_mu.copy()
-            itr += 1
+        itr = 1 
+        demo = 0
 
+        while itr < max_iter: #diff > self.M.epsilon and itr < max_iter:
+            print("Iteration %d" % itr)
+            exp_mu_ = exp_mu.copy()
             diff_ = float('inf')
             s = self.M.S[-2]
             mu = self.M.features[s].copy()
             t = 0
-            while diff_ > self.M.epsilon:
+            path = []
+            while t <= self.steps: #diff_ > self.M.epsilon and t <= self.steps:
+                print("Step %d" % t)
                 mu_ = mu.copy()
-                t += 1
+                if unsafes[s]:
+                    break
+                if targets[s]:
+                    path.append([t, s, 0, s])
+                    break
+                path.append([t, s])
+                mu += self.M.features[s] * self.M.discount**t
                 a = policy[s].argmax()
                 s = self.M.move(s, a)
-                mu += self.M.features[s] * self.M.discount**t
+                path[-1] = path[-1] + [a, s]
+                t += 1
                 diff_ = np.linalg.norm(mu - mu_, ord = 2)
+            if (not unsafes[s]) and targets[s]:
+                demo += 1
+                file = open('./data/demo_gridworld_', 'a')
+                for t in path:
+                    file.write(str(t[0]) + ' ' + str(t[1]) + ' ' + str(t[2]) + ' ' + str(t[3]) + '\n')
+                file.write(str(len(path)) + ' ' + str(s) + ' 0 ' + str(s) + '\n')
+                file.close()
+                print("Demo %d" % demo)
             exp_mu = (exp_mu * (itr - 1) + mu)/itr
             diff = np.linalg.norm(exp_mu - exp_mu_, ord = 2)
+            itr += 1
+            if demo == 10000:
+                return exp_mu
         
         return exp_mu
         
@@ -328,7 +360,7 @@ class gridworld(grids, object):
      
         self.M.rewards = np.dot(self.M.features, theta) 
         self.demo(self.M.rewards, steps = steps)
-        self.learn_from_demo_file()
+        return self.learn_from_demo_file()
 
     def learn_from_demo_file(self, path = './data/demo_gridworld'):
         learn = cegal(self.M, max_iter = 30)
@@ -343,7 +375,7 @@ class gridworld(grids, object):
 	file.close()
 
         demo_mu = learn.read_demo_file(path)
-        self.AL(demo_mu)
+        return self.AL(demo_mu)
     
     def AL(self, exp_mu):
     
@@ -370,6 +402,31 @@ class gridworld(grids, object):
         self.M.rewards = np.dot(self.M.features, opt['theta']) 
         self.draw_grids(self.M.rewards)
         return opt
+
+    def write_policy_file(self, policy = None, path = './data/policy_gridworld'):
+        if policy is None:
+            policy = self.M.policy
+
+        os.system('rm ' + str(path))
+        os.system('touch ' + str(path))
+        file = open(str(path), 'w')
+        for s in self.M.S:
+            for a in self.M.A:
+                file.write(str(policy[s, a]) + ' ')
+            file.write('\n')
+        file.close()
+        
+    def read_policy_file(self,  path = './data/policy_gridworld'):
+        self.M.policy = np.zeros([len(self.M.S), len(self.M.A)])
+        file = open(str(path), 'r')
+        lines = file.readlines()
+        for s in self.M.S:
+            line = lines[s].split('\n')[0].split(' ')
+            for a in self.M.A:
+                self.M.policy[s, a] = float(line[a])
+        file.close()
+        self.M.set_policy()
+        return self.M.policy
 
     def synthesize_from_human_demo(self, safety, steps = 64):
         if steps is None:
@@ -444,13 +501,11 @@ class gridworld(grids, object):
         return opt, opt_
         
     
-'''
+
         
 if __name__ == "__main__":
     grids = gridworld()    
     grids.build_mdp()
 
+        
 
-    #grids.learn_from_human_demo(steps = 64)
-    #opt, opt_ = grids.synthesize_from_demo_file(safety = 0.5)
-''' 
