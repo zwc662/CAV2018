@@ -1139,3 +1139,48 @@ Given safety spec:
 P=? [U<= 64 'unsafe']
 
 PRISM model checking the probability of reaching the unsafe states: 0.826697
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.816863
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.295255
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.816863
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.826697
+
+AL ends after 30 iterations
+
+>>>>>>>>Apprenticeship Learning learns a policy  which is an optimal policy of reward function as in the figure
+.
+Given safety spec:
+P=? [U<= 64 'unsafe']
+
+PRISM model checking the probability of reaching the unsafe states: 0.822276

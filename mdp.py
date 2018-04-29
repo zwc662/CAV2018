@@ -389,6 +389,7 @@ class mdp():
     def optimal_policy(self, theta = None):
         if theta is None:
             theta = self.theta
+        theta = theta/np.linalg.norm(theta, ord = 2)
         self.rewards = np.dot(self.features, theta)
  
         self.policy = self.value_iteration()

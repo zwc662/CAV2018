@@ -507,5 +507,18 @@ if __name__ == "__main__":
     grids = gridworld()    
     grids.build_mdp()
 
+    #opt = grids.learn_from_human_demo(steps = grids.steps)
+    #opt = grids.learn_from_demo_file()
+    #opt, opt_ = grids.synthesize_from_demo_file(safety = 0.2)
+    #grids.write_policy_file(policy = opt['policy'])
+
+    #policy = grids.read_policy_file()
+
+    #mus, policy = grids.M.optimal_policy(theta = np.array([9.9, 9.9, -1., -1.]))
+    #grids.policy_simulation(policy = policy, max_iter = 10000000)
+    opt = grids.learn_from_demo_file('./data/demo_gridworld_')
+    #opt, opt_ = grids.synthesize_from_demo_file(safety = 0.2)
+
+    #grids.policy_simulation(policy = opt['policy'], max_iter = 10000000)
         
 
