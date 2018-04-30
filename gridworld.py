@@ -505,7 +505,7 @@ class gridworld(grids, object):
         
 if __name__ == "__main__":
     grids = gridworld()    
-    grids.build_mdp()
+    grids.build_mdp_from_file()
 
     #opt = grids.learn_from_human_demo(steps = grids.steps)
     #opt = grids.learn_from_demo_file()
@@ -514,7 +514,7 @@ if __name__ == "__main__":
 
     #policy = grids.read_policy_file()
 
-    #mus, policy = grids.M.optimal_policy(theta = np.array([9.9, 9.9, -1., -1.]))
+    #mus, policy = grids.M.optimal_policy(theta = np.array([99.9, 99.9, -1., -1.]))
     #grids.policy_simulation(policy = policy, max_iter = 10000000)
     opt = grids.learn_from_demo_file('./data/demo_gridworld_')
     #opt, opt_ = grids.synthesize_from_demo_file(safety = 0.2)

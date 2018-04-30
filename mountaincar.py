@@ -531,6 +531,7 @@ class mountaincar(grids, object):
                         paths.append(path)
                         if not starts[s_i]:
                             self.M.starts.append(s_i)
+                            starts[s_i] = True
 
             if len(streak) > 100:
                 streak.pop(0)
@@ -557,6 +558,7 @@ class mountaincar(grids, object):
                     paths = list()
                     using = 0
                     self.M.starts = list()
+                    starts = np.zeros([len(self.M.S)]).astype(bool)
                     pass
             episodes = 0
 
